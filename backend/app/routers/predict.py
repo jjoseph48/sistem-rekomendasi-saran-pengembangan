@@ -2,7 +2,7 @@ import joblib
 import random
 
 # Muat model
-model = joblib.load("./model/model_classification_best_tuned.joblib")
+model = joblib.load("C:\Josephine Work File - 2025\Latsar Aktualisasi\sistem-rekomendasi-saran-pengembangan\model\model_classification_best_tuned.joblib")
 
 # Aspek yang digunakan
 aspek_list = ["Pengetahuan", "Keahlian", "Personal Attribute"]
