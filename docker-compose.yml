@@ -11,7 +11,10 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # 🟢 mount data directory (menyimpan isi database)
       - postgres_data:/var/lib/postgresql/data
+      # 🟢 tambahkan baris di bawah ini untuk menjalankan init_db.sql
+      - ./db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
 
   backend:
     build: .

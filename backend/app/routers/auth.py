@@ -36,25 +36,34 @@ def register_pegawai(data: dict, db: Session = Depends(get_db)):
         komp = models.KompetensiPegawai(
             pegawai_id=pegawai.id,
             nama_kompetensi=item["nama_kompetensi"],
+            standar_level=item["standar_level"],
             capaian_nilai=item["capaian_nilai"],
             gap_kompetensi=item["gap_kompetensi"]
         )
         db.add(komp)
         db.commit()
 
+        # 🔹 Default feedback terakhir
+        feedback_terakhir = "Tidak Ada"
+
         # 🔹 Panggil model ML untuk saran pengembangan
         saran_hasil = predict_saran(
+            item["nama_kompetensi"],
+            item["standar_level"],
             item["capaian_nilai"],
             item["gap_kompetensi"],
-            item["nama_kompetensi"]
+            feedback_terakhir
         )
+
+        # 🔹 Simpan saran ke database
         for aspek, daftar_saran in saran_hasil.items():
             for s in daftar_saran:
                 record = models.SaranPengembangan(
                     pegawai_id=pegawai.id,
                     kompetensi=item["nama_kompetensi"],
                     aspek_kompetensi=aspek,
-                    saran_pengembangan=s
+                    saran_pengembangan=s,
+                    feedback_terakhir=feedback_terakhir
                 )
                 db.add(record)
     db.commit()
@@ -63,7 +72,8 @@ def register_pegawai(data: dict, db: Session = Depends(get_db)):
         "message": "Registrasi berhasil",
         "nama": pegawai.nama,
         "nip": pegawai.nip,
-        "total_kompetensi": len(data["kompetensi"])
+        "total_kompetensi": len(data["kompetensi"]),
+        "total_saran": len(data["kompetensi"]) * 9
     }
 
 @router.post("/login")
