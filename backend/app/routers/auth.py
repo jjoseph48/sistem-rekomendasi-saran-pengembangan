@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import models
 from app.database import SessionLocal
+from app.routers.predict import predict_saran
 
 router = APIRouter()
 
@@ -42,7 +43,7 @@ def register_pegawai(data: dict, db: Session = Depends(get_db)):
         db.commit()
 
         # 🔹 Panggil model ML untuk saran pengembangan
-        saran_hasil = get_saran_pengembangan(
+        saran_hasil = predict_saran(
             item["capaian_nilai"],
             item["gap_kompetensi"],
             item["nama_kompetensi"]

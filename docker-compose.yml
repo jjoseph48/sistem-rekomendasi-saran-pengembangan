@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15
@@ -28,7 +26,6 @@ services:
       - "8000:8000"
     volumes:
       - .:/app
-      - model_storage:/model
 
 volumes:
   postgres_data:
