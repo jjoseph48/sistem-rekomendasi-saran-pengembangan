@@ -1,29 +1,34 @@
 version: "3.9"
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-    container_name: latsar-backend
-    restart: always
-    env_file: .env
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    volumes:
-      - ./backend/app:/app/app  # agar update kode langsung refleks
-
   db:
     image: postgres:15
-    container_name: latsar-db
+    container_name: latsar_postgres
     restart: always
     env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: latsar_backend
+    restart: always
+    depends_on:
+      - db
+    env_file: .env
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - model_storage:/model
 
 volumes:
   postgres_data:

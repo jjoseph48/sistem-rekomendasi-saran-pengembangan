@@ -1,15 +1,14 @@
 import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-DB_USER = os.getenv("POSTGRES_USER", "latsar")
-DB_PASS = os.getenv("POSTGRES_PASSWORD", "latsar123")
-DB_NAME = os.getenv("POSTGRES_DB", "latsardb")
-DB_HOST = os.getenv("POSTGRES_HOST", "db")
-DB_PORT = os.getenv("POSTGRES_PORT", "5432")
+# Load .env file
+load_dotenv()
 
-SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/latsar_db")
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
