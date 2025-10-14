@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app import models
 from app.database import SessionLocal
+from app.schemas import EditSaran
 
 router = APIRouter(prefix="/superadmin", tags=["Superadmin"])
 
@@ -132,14 +133,26 @@ def lihat_saran(db: Session = Depends(get_db)):
         } for s in saran
     ]
 
-@router.put("/saran/{id}")
-def edit_saran(id: int, data: dict, db: Session = Depends(get_db)):
-    saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.id == id).first()
+@router.put("/{saran_id}")
+def update_saran(saran_id: int, data: EditSaran, db: Session = Depends(get_db)):
+    saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.id == saran_id).first()
     if not saran:
-        raise HTTPException(status_code=404, detail="Saran tidak ditemukan.")
-    saran.saran_pengembangan = data.get("saran_pengembangan", saran.saran_pengembangan)
+        raise HTTPException(status_code=404, detail="Saran tidak ditemukan")
+
+    # ubah field secara eksplisit
+    saran.saran_pengembangan = data.saran_pengembangan
+    saran.feedback_terakhir = data.feedback_terakhir
+
     db.commit()
-    return {"message": "Saran pengembangan berhasil diperbarui."}
+    db.refresh(saran)
+    return {
+        "message": "Saran berhasil diperbarui",
+        "id": saran.id,
+        "kompetensi": saran.kompetensi,
+        "aspek_kompetensi": saran.aspek_kompetensi,
+        "saran_pengembangan": saran.saran_pengembangan,
+        "feedback_terakhir": saran.feedback_terakhir
+    }
 
 @router.delete("/saran/{id}")
 def hapus_saran(id: int, db: Session = Depends(get_db)):

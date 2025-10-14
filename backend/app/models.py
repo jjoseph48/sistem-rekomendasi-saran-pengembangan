@@ -27,8 +27,7 @@ class Pegawai(Base):
     satker = Column(String)
     jabatan = Column(String)
     kinerja = Column(String)  # 🔹 tambahan baru
-    tanggal_registrasi = Column(DateTime, default=datetime.utcnow)
-
+    
     # 🔹 Relasi ke tabel lain
     kompetensi = relationship("KompetensiPegawai", back_populates="pegawai", cascade="all, delete-orphan")
     saran_pengembangan = relationship("SaranPengembangan", back_populates="pegawai", cascade="all, delete-orphan")

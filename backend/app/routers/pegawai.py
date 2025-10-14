@@ -31,8 +31,7 @@ def get_saran_by_nip(nip: str, db: Session = Depends(get_db)):
             "kompetensi": s.kompetensi,
             "aspek_kompetensi": s.aspek_kompetensi,
             "saran_pengembangan": s.saran_pengembangan,
-            "feedback_terakhir": last_fb,
-            "tanggal_saran": s.tanggal_saran
+            "feedback_terakhir": last_fb
         })
     return {"nip": pegawai.nip, "nama": pegawai.nama, "riwayat_saran": hasil}
 

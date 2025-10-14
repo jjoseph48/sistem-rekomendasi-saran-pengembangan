@@ -17,7 +17,7 @@ services:
       - ./db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
 
   backend:
-    build: .
+    build: ./backend
     container_name: latsar_backend
     restart: always
     depends_on:
@@ -28,7 +28,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - ./backend:/app
 
 volumes:
   postgres_data:

@@ -38,11 +38,13 @@ class PegawaiResponse(PegawaiBase):
 # =====================================================
 
 class PredictInput(BaseModel):
+    nama_kompetensi: str
     level_kompetensi: float
     capaian_nilai: float
     gap_kompetensi: float
     kompetensi: str
     aspek_kompetensi: str
+    feedback_terakhir: str
 
 
 class SaranResponse(BaseModel):
@@ -61,3 +63,7 @@ class FeedbackCreate(BaseModel):
     saran_id: int
     nip: str                # 🔹 untuk tahu siapa yang memberi feedback
     feedback: str           # (sangat efektif, efektif, kurang efektif, tidak efektif)
+
+class EditSaran(BaseModel):
+    saran_pengembangan: str
+    feedback_terakhir: str
