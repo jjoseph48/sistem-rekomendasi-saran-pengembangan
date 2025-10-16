@@ -1,0 +1,56 @@
+body {
+  font-family: Georgia, 'Times New Roman', Times, serif, Arial, sans-serif;
+  background-color: #f9f9fb;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.c_login-pegawai-frame1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.c_login-pegawai-frame4 {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.nip-input {
+  width: 240px;
+  padding: 10px;
+  font-size: 14px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  text-align: center;
+}
+
+.login-btn,
+.register-btn {
+  background-color: #0078d7;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.login-btn:hover,
+.register-btn:hover {
+  background-color: #005ea2;
+}
+
+.separator {
+  border: 0;
+  height: 1px;
+  background: #ccc;
+  width: 60%;
+  margin: 20px auto;
+}

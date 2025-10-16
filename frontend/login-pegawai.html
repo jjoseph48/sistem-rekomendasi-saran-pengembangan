@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Pegawai</title>
+    <link href="./css/c_login-pegawai.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <div class="c_login-pegawai-frame1">
+      <div class="c_login-pegawai-frame2">
+        <div class="c_login-pegawai-frame3">
+          <div class="c_login-pegawai-text10">
+            <p class="c_login-pegawai-text11">Login</p>
+          </div>
+          <div class="c_login-pegawai-text12">
+            <p class="c_login-pegawai-text13">
+              Masukkan NIP anda untuk login
+            </p>
+          </div>
+        </div>
+
+        <!-- Input NIP -->
+        <div class="c_login-pegawai-frame4">
+          <label for="nip" class="c_login-pegawai-text15">NIP</label>
+          <input
+            type="text"
+            id="nip"
+            name="nip"
+            placeholder="Masukkan NIP Anda"
+            class="nip-input"
+          />
+        </div>
+
+        <!-- Tombol Login -->
+        <div class="c_login-pegawai-frame6">
+          <button id="btnLogin" class="login-btn">Login</button>
+        </div>
+
+        <!-- Garis pemisah -->
+        <div class="c_login-pegawai-frame7">
+          <hr class="separator" />
+        </div>
+
+        <!-- Register -->
+        <div class="c_login-pegawai-text18">
+          <p class="c_login-pegawai-text19">atau</p>
+        </div>
+        <div class="c_login-pegawai-frame8">
+          <button
+            class="register-btn"
+            onclick="window.location.href='register-pegawai.html'"
+          >
+            Register
+          </button>
+        </div>
+
+        <div class="c_login-pegawai-text22">
+          <p class="c_login-pegawai-text23">
+            Register terlebih dahulu jika data diri anda belum terdaftar
+          </p>
+        </div>
+      </div>
+
+      <div class="c_login-pegawai-text24">
+        <p class="c_login-pegawai-text25">
+          E-Talenta (Manajemen Talenta) Kemenpar
+        </p>
+      </div>
+    </div>
+
+    <script src="./js/login-pegawai.js"></script>
+  </body>
+</html>
