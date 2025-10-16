@@ -21,7 +21,7 @@ def superadmin_login(data: dict, db: Session = Depends(get_db)):
     return {"message": "Login berhasil", "user": {"username": user.username, "role": user.role}}
 
 @router.post("/logout")
-def logout():
+def logout_admin():
     return {"message": "Logout berhasil"}
 
 # Admin management

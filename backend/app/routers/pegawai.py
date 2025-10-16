@@ -12,6 +12,18 @@ def get_db():
     finally:
         db.close()
 
+@router.get("/profile/{nip}")
+def get_profile(nip: str, db: Session = Depends(get_db)):
+    pegawai = db.query(models.Pegawai).filter(models.Pegawai.nip == nip).first()
+    if not pegawai:
+        raise HTTPException(status_code=404, detail="Pegawai tidak ditemukan")
+    return {
+        "nama": pegawai.nama,
+        "nip": pegawai.nip,
+        "satker": pegawai.satker,
+        "jabatan": pegawai.jabatan,
+        "kinerja": pegawai.kinerja
+    }
 
 @router.get("/saran")
 def get_saran_by_nip(nip: str, db: Session = Depends(get_db)):
@@ -72,3 +84,11 @@ def pilih_saran(saran_id: int, db: Session = Depends(get_db)):
         "aspek_kompetensi": saran.aspek_kompetensi,
         "is_selected": saran.is_selected
     }
+
+@router.post("/logout")
+def logout_user():
+    """
+    Logout sederhana — tidak menyimpan sesi apa pun.
+    Frontend hanya perlu hapus session di browser.
+    """
+    return {"message": "Logout berhasil"}
