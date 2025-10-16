@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
@@ -62,6 +62,8 @@ class SaranPengembangan(Base):
     saran_pengembangan = Column(String, nullable=False)
     feedback_terakhir = Column(String(50), default="Tidak Ada")
     tanggal_rekomendasi = Column(DateTime, default=datetime.utcnow)
+    is_selected = Column(Boolean, default=False)
+
 
     # 🔹 Relationship ke Pegawai
     pegawai = relationship("Pegawai", back_populates="saran_pengembangan")

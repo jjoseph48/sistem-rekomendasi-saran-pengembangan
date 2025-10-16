@@ -65,5 +65,7 @@ class FeedbackCreate(BaseModel):
     feedback: str           # (sangat efektif, efektif, kurang efektif, tidak efektif)
 
 class EditSaran(BaseModel):
+    kompetensi: str
+    aspek_kompetensi: str
     saran_pengembangan: str
-    feedback_terakhir: str
+    feedback_terakhir: Optional[str] = "Tidak Ada"

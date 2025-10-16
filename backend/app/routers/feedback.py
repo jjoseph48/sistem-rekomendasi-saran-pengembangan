@@ -41,6 +41,48 @@ def kirim_feedback(data: schemas.FeedbackCreate, db: Session = Depends(get_db)):
 
     return {"message": "Feedback berhasil disimpan."}
 
+@router.put("/{saran_id}")
+def edit_feedback(saran_id: int, data: dict, db: Session = Depends(get_db)):
+    """
+    Edit atau update feedback berdasarkan saran_id.
+    Jika belum ada feedback untuk saran tersebut, maka dibuat baru.
+    """
+
+    # Cari feedback terakhir berdasarkan saran_id
+    feedback = db.query(models.Feedback).filter(models.Feedback.saran_id == saran_id).first()
+
+    if feedback:
+        # Update feedback yang sudah ada
+        feedback.feedback = data.get("feedback", feedback.feedback)
+        db.commit()
+        db.refresh(feedback)
+        message = "Feedback berhasil diperbarui."
+    else:
+        # Jika belum ada, buat baru
+        new_feedback = models.Feedback(
+            saran_id=saran_id,
+            nip=data.get("nip"),
+            feedback=data.get("feedback")
+        )
+        db.add(new_feedback)
+        db.commit()
+        db.refresh(new_feedback)
+        feedback = new_feedback
+        message = "Feedback baru berhasil ditambahkan."
+
+    # Update juga kolom feedback_terakhir di tabel saran_pengembangan
+    saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.id == saran_id).first()
+    if saran:
+        saran.feedback_terakhir = feedback.feedback
+        db.commit()
+
+    return {
+        "message": message,
+        "saran_id": saran_id,
+        "nip": feedback.nip,
+        "feedback": feedback.feedback
+    }
+
 # =====================================================
 # 📜 Melihat Feedback Berdasarkan Pegawai (NIP)
 # =====================================================

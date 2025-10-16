@@ -1,41 +1,50 @@
 # app/routers/predict.py
+import pandas as pd
 import joblib
-import random
 from fastapi import APIRouter
 
 router = APIRouter()
+clf_model = joblib.load("./model/model_classification_best_tuned.joblib")
 
-# 🔹 Muat model joblib
-model = joblib.load("./model/model_classification_best_tuned.joblib")
-
-# 🔹 Daftar aspek yang berlaku
 aspek_list = ["Pengetahuan", "Keahlian", "Personal Attribute"]
 
 def predict_saran(kompetensi, standar_level, capaian_nilai, gap, feedback_terakhir):
-    """
-    Menghasilkan 9 saran pengembangan (3 untuk tiap aspek).
-    Input features model:
-        [kompetensi, standar_level, capaian_nilai, gap, aspek, feedback_terakhir]
-    """
-    aspek_list = ["Pengetahuan", "Keahlian", "Personal Attribute"]
     hasil = {}
 
     for aspek in aspek_list:
-        # Buat input fitur untuk tiap aspek
-        input_features = [[kompetensi, standar_level, capaian_nilai, gap, aspek, feedback_terakhir]]
-        
-        # 🔹 Prediksi dari model
-        try:
-            prediction = model.predict(input_features)[0]
-        except Exception:
-            # fallback dummy kalau model belum siap untuk input string
-            prediction = "Rekomendasi umum"
+        # Pastikan format aspek sesuai dengan model training (huruf kecil)
+        aspek_input = aspek.lower()
 
-        # 🔹 Buat 3 saran untuk tiap aspek
-        hasil[aspek] = [
-            f"{kompetensi} - {aspek} - Saran {i+1}: {prediction} "
-            f"{random.choice(['Workshop', 'Pelatihan', 'Coaching'])}. "
-            for i in range(3)
-        ]
-    
+        # Buat DataFrame sesuai fitur training
+        input_df = pd.DataFrame([{
+            "kompetensi": kompetensi.lower(),
+            "standar level": standar_level,
+            "nilai": capaian_nilai,
+            "gap": gap,
+            "aspek": aspek_input,
+            "feedback_terakhir": feedback_terakhir.lower()
+        }])
+
+        # Prediksi probabilitas
+        proba = clf_model.predict_proba(input_df)[0]
+        classes = clf_model.named_steps["model"].classes_
+
+        # Hitung skor
+        scores = {classes[i]: proba[i] for i in range(len(classes))}
+        top_rekom = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:3]
+
+        hasil[aspek] = [saran for saran, score in top_rekom]
+
     return hasil
+
+
+@router.post("/predict")
+def predict_api(data: dict):
+    hasil = predict_saran(
+        data["kompetensi"],
+        data["standar_level"],
+        data["capaian_nilai"],
+        data["gap"],
+        data.get("feedback_terakhir", "tidak ada")
+    )
+    return {"hasil_rekomendasi": hasil}

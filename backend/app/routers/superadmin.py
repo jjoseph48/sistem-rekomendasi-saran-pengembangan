@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from app import models
+from app import models, schemas
 from app.database import SessionLocal
-from app.schemas import EditSaran
 
 router = APIRouter(prefix="/superadmin", tags=["Superadmin"])
 
@@ -129,29 +128,39 @@ def lihat_saran(db: Session = Depends(get_db)):
             "kompetensi": s.kompetensi,
             "aspek_kompetensi": s.aspek_kompetensi,
             "saran_pengembangan": s.saran_pengembangan,
-            "tanggal_saran": s.tanggal_saran
+            "tanggal rekomendasi": s.tanggal_rekomendasi,
+            "feedback_terakhir": s.feedback_terakhir,       
+            "is_selected": s.is_selected
         } for s in saran
     ]
 
 @router.put("/{saran_id}")
-def update_saran(saran_id: int, data: EditSaran, db: Session = Depends(get_db)):
+def update_saran_by_id(saran_id: int, data: schemas.EditSaran, db: Session = Depends(get_db)):
+    """
+    Edit satu saran pengembangan berdasarkan ID saran.
+    """
+    # Cari data saran di database
     saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.id == saran_id).first()
     if not saran:
-        raise HTTPException(status_code=404, detail="Saran tidak ditemukan")
+        raise HTTPException(status_code=404, detail="Saran pengembangan tidak ditemukan")
 
-    # ubah field secara eksplisit
+    # Update field yang diizinkan
     saran.saran_pengembangan = data.saran_pengembangan
     saran.feedback_terakhir = data.feedback_terakhir
 
     db.commit()
     db.refresh(saran)
+
     return {
-        "message": "Saran berhasil diperbarui",
-        "id": saran.id,
-        "kompetensi": saran.kompetensi,
-        "aspek_kompetensi": saran.aspek_kompetensi,
-        "saran_pengembangan": saran.saran_pengembangan,
-        "feedback_terakhir": saran.feedback_terakhir
+        "message": "✅ Saran pengembangan berhasil diperbarui",
+        "data": {
+            "id": saran.id,
+            "nip": saran.pegawai.nip,
+            "kompetensi": saran.kompetensi,
+            "aspek_kompetensi": saran.aspek_kompetensi,
+            "saran_pengembangan": saran.saran_pengembangan,
+            "feedback_terakhir": saran.feedback_terakhir,
+        }
     }
 
 @router.delete("/saran/{id}")
