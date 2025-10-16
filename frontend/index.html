@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portal E-Talenta</title>
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+
+  <body>
+    <div class="portal-container">
+      <div class="portal-header">
+        <h1 class="portal-title">Portal E-Talenta</h1>
+        <p class="portal-subtitle">
+          Silakan pilih jenis login sesuai peran Anda
+        </p>
+      </div>
+
+      <div class="portal-buttons">
+        <button class="btn login-pegawai" onclick="goToLogin('pegawai')">
+          Login Pegawai
+        </button>
+        <button class="btn login-admin" onclick="goToLogin('admin')">
+          Login Admin
+        </button>
+      </div>
+
+      <div class="portal-footer">
+        <p>E-Talenta (Manajemen Talenta) Kementerian Pariwisata</p>
+      </div>
+    </div>
+
+    <script src="./js/index.js"></script>
+  </body>
+</html>

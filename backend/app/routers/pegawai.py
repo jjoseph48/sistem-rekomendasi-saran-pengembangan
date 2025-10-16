@@ -25,7 +25,7 @@ def get_profile(nip: str, db: Session = Depends(get_db)):
         "kinerja": pegawai.kinerja
     }
 
-@router.get("/saran")
+@router.get("/saran/{nip}")
 def get_saran_by_nip(nip: str, db: Session = Depends(get_db)):
     pegawai = db.query(models.Pegawai).filter(models.Pegawai.nip == nip).first()
     if not pegawai:

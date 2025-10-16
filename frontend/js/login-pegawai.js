@@ -1,45 +1,30 @@
-const API_BASE = "http://localhost:8000"; // ganti dengan URL backend Azure kamu
+document.getElementById("btnLogin").addEventListener("click", async () => {
+  const nip = document.getElementById("nip").value.trim();
 
-document.addEventListener("DOMContentLoaded", () => {
-  const btnLogin = document.getElementById("btnLogin");
+  if (!nip) {
+    alert("Harap masukkan NIP terlebih dahulu.");
+    return;
+  }
 
-  btnLogin.addEventListener("click", async () => {
-    const nip = document.getElementById("nip").value.trim();
-
-    if (!nip) {
-      alert("Masukkan NIP terlebih dahulu!");
-      return;
-    }
-
-    try {
-      // panggil endpoint login
-      const res = await fetch(`${API_BASE}/login?nip=${nip}`, {
+  try {
+    const response = await fetch(`http://localhost:8000/login?nip=${nip}`, {
         method: "POST",
-      });
-
-      if (res.status === 404) {
-        alert("NIP tidak ditemukan. Silakan registrasi terlebih dahulu.");
-        window.location.href = "register-pegawai.html";
-        return;
-      }
-
-      if (!res.ok) {
-        throw new Error(`Gagal login (${res.status})`);
-      }
-
-      const data = await res.json();
-
-      // simpan data pegawai di localStorage untuk digunakan di dashboard
-      localStorage.setItem("pegawai_nip", data.nip);
-      localStorage.setItem("pegawai_nama", data.nama);
-      localStorage.setItem("pegawai_satker", data.satker || "");
-      localStorage.setItem("pegawai_jabatan", data.jabatan || "");
-
-      alert(`Selamat datang, ${data.nama}`);
-      window.location.href = "dashboard-pegawai.html";
-    } catch (err) {
-      console.error("Error login:", err);
-      alert("Terjadi kesalahan saat login. Coba lagi.");
-    }
   });
+
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem("nip", data.nip);
+      localStorage.setItem("nama", data.nama);
+
+      // Tunggu penyimpanan selesai (dalam microtask berikutnya)
+      setTimeout(() => {
+          window.location.href = "dashboard-pegawai.html";
+      }, 100);
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    alert("Terjadi kesalahan koneksi ke server.");
+  }
 });

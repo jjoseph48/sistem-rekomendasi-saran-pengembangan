@@ -1,9 +1,10 @@
+/* CSS for Login Pegawai Page */
 body {
-  font-family: Georgia, 'Times New Roman', Times, serif, Arial, sans-serif;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   background-color: #f9f9fb;
   margin: 0;
   padding: 0;
-  text-align: center;
+  text-align: center; /* Semua teks center */
 }
 
 .c_login-pegawai-frame1 {
@@ -14,9 +15,22 @@ body {
   height: 100vh;
 }
 
+/* Judul "Login" */
+.c_login-pegawai-text11 {
+  font-size: 28px;
+  font-weight: bold;
+  text-transform: uppercase; /* jadi huruf besar semua */
+  margin: 0;
+}
+
+/* Subjudul di bawah Login */
+.c_login-pegawai-text13 {
+  font-size: 16px;
+  margin: 5px 0 20px;
+}
+
 .c_login-pegawai-frame4 {
   margin: 20px 0;
-  text-align: center;
 }
 
 .nip-input {
@@ -39,7 +53,6 @@ body {
   cursor: pointer;
   border-radius: 6px;
   margin-top: 10px;
-  text-align: center;
 }
 
 .login-btn:hover,
@@ -53,4 +66,11 @@ body {
   background: #ccc;
   width: 60%;
   margin: 20px auto;
+}
+
+/* Footer text */
+.c_login-pegawai-text23 {
+  font-size: 12px;
+  color: #777; /* abu-abu lembut */
+  margin-top: 30px;
 }
