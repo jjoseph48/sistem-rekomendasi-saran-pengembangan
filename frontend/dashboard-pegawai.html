@@ -8,86 +8,81 @@
   </head>
 
   <body>
-    <div class="c_dashboard-frame10">
-      <!-- Header -->
-      <div class="c_dashboard-frame11">
-        <div class="c_dashboard-text10">
-          <p class="c_dashboard-text11">Jabatan Lowong 2025/2026</p>
-        </div>
-      </div>
+    <div class="dashboard-wrapper">
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <h1>Dashboard Pegawai</h1>
+        <button id="logoutBtn" class="logout-btn">Logout</button>
+      </header>
 
-      <!-- Dashboard Title -->
-      <div class="c_dashboard-frame12">
-        <div class="c_dashboard-text12">
-          <p class="c_dashboard-text13">Dashboard</p>
-        </div>
-      </div>
+      <main class="dashboard-main">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+          <h3>Menu</h3>
+          <ul>
+            <li onclick="window.location.href='dashboard-pegawai.html'">🏠 Dashboard</li>
+            <li onclick="window.location.href='profil-pegawai.html'">👤 Profil Pegawai</li>
+            <li onclick="window.location.href='riwayat-saran.html'">🗒️ Riwayat Saran</li>
+            <li>📋 Simpeg</li>
+          </ul>
+        </aside>
 
-      <!-- Sidebar -->
-      <div class="c_dashboard-frame13">
-        <div class="c_dashboard-frame14">
-          <div class="c_dashboard-text14"><p class="c_dashboard-text15">Menu</p></div>
-        </div>
+        <!-- ISI UTAMA -->
+        <section class="dashboard-content">
+          <div class="content-grid">
+            <!-- Kotak Talenta -->
+            <div class="kotak-talenta">
+              <h2>KOTAK TALENTA</h2>
+              <div class="kotak-talent-box">
+                <h1>9</h1>
+                <p>Kategori</p>
+                <span>Kinerja di atas ekspektasi dan potensial tinggi</span>
+              </div>
+            </div>
 
-        <div class="c_dashboard-frame16" onclick="window.location.href='dashboard-pegawai.html'">
-          <img src="assets/71066dde432034e611dd3814f43d4a51.svg" width="24" height="24" />
-          <p class="c_dashboard-text17">Dashboard</p>
-        </div>
+            <!-- Saran Rekomendasi -->
+            <div class="saran-rekomendasi">
+              <h2>SARAN REKOMENDASI</h2>
+              <div id="saranContainer" class="saran-container">
+                <p class="loading-text">Memuat saran pengembangan...</p>
+              </div>
+            </div>
+          </div>
 
-        <div class="c_dashboard-frame18" onclick="window.location.href='simpeg.html'">
-          <img src="assets/4af37075a9fbf2fdcdbd291fab024032.svg" width="24" height="24" />
-          <p class="c_dashboard-text19">Simpeg</p>
-        </div>
-
-        <div class="c_dashboard-frame20" onclick="window.location.href='profil-pegawai.html'">
-          <img src="assets/957ffcf6382253fbe587fbc36b6f5588.svg" width="24" height="24" />
-          <p class="c_dashboard-text21">Profil Pegawai</p>
-        </div>
-
-        <div class="c_dashboard-frame22" onclick="window.location.href='riwayat-saran.html'">
-          <img src="assets/23e6ba4735ce8566b27dd579ff000420.svg" width="24" height="24" />
-          <p class="c_dashboard-text23">Riwayat Saran</p>
-        </div>
-
-        <div class="c_dashboard-text24"><p class="c_dashboard-text25">E-Talenta</p></div>
-      </div>
-
-      <!-- Logout -->
-      <div class="c_dashboard-frame24">
-        <div class="c_dashboard-frame25">
-          <div class="c_dashboard-text26"><p class="c_dashboard-text27">Logout</p></div>
-        </div>
-      </div>
-
-      <!-- Kotak Talenta -->
-      <div class="c_dashboard-frame27">
-        <div class="c_dashboard-frame28">
-          <div class="c_dashboard-text28"><p class="c_dashboard-text29">KOTAK TALENTA</p></div>
-        </div>
-        <div class="c_dashboard-frame29">
-          <div class="c_dashboard-text30"><p class="c_dashboard-text31">9</p></div>
-        </div>
-        <div class="c_dashboard-text32"><p class="c_dashboard-text33">Kategori</p></div>
-        <div class="c_dashboard-text34">
-          <p class="c_dashboard-text35">
-            Kinerja di atas ekspektasi dan potensial tinggi
-          </p>
-        </div>
-      </div>
-
-      <!-- SARAN REKOMENDASI -->
-      <div class="c_dashboard-frame30">
-        <div class="c_dashboard-frame31">
-          <div class="c_dashboard-text36"><p class="c_dashboard-text37">SARAN REKOMENDASI</p></div>
-        </div>
-
-        <div id="saranContainer" class="saran-container">
-          <!-- Saran akan dimasukkan lewat JS -->
-          <p class="loading-text">Memuat saran pengembangan...</p>
-        </div>
-      </div>
+          <!-- Jabatan Lowong -->
+          <div class="jabatan-lowong">
+            <h2>Jabatan Lowong 2025/2026</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama Jabatan</th>
+                  <th>Unit Kerja</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Analis Kebijakan</td>
+                  <td>Biro SDM</td>
+                  <td>Terbuka</td>
+                </tr>
+                <tr>
+                  <td>Perencana Madya</td>
+                  <td>Direktorat Pengembangan</td>
+                  <td>Terbuka</td>
+                </tr>
+                <tr>
+                  <td>Pranata Komputer Ahli</td>
+                  <td>Subdit Teknologi</td>
+                  <td>Terbuka</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
     </div>
 
-    <script src="./js/dashboard-pegawai.js"></script>
+    <script src="./js/dashboard-pegawai.js" defer></script>
   </body>
 </html>

@@ -1,84 +1,58 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const nip = localStorage.getItem("nip");
-
-  if (!nip) {
-    alert("Silakan login terlebih dahulu.");
-    window.location.href = "login-pegawai.html";
-    return;
-  }
-
-  const saranContainer = document.getElementById("saranContainer");
-  const profilContainer = document.getElementById("profilContainer");
-
-  saranContainer.innerHTML = "<p class='loading-text'>Memuat saran pengembangan...</p>";
-  profilContainer.innerHTML = "<p class='loading-text'>Memuat profil pegawai...</p>";
+  const nip = "121212"; // nanti bisa diganti dari sessionStorage atau input login
+  console.log("NIP yang dikirim:", nip);
 
   try {
-    // ✅ Panggil dua endpoint secara paralel
-    const [profilRes, saranRes] = await Promise.all([
-      fetch(`http://localhost:8000/profile/${nip}`, { method: "GET" }),
-      fetch(`http://localhost:8000/saran/${nip}`, { method: "GET" }),
-    ]);
+    const response = await fetch(`http://localhost:8000/pegawai/saran/${nip}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
 
-    if (!profilRes.ok) throw new Error(`Gagal memuat profil (${profilRes.status})`);
-    if (!saranRes.ok) throw new Error(`Gagal memuat saran (${saranRes.status})`);
+    if (!response.ok) {
+      throw new Error(`Gagal fetch data saran (${response.status})`);
+    }
 
-    const profil = await profilRes.json();
-    const saranData = await saranRes.json();
+    const data = await response.json();
+    console.log("Data saran:", data);
 
-    // 🧩 Tampilkan profil
-    profilContainer.innerHTML = `
-      <div class="profil-card">
-        <h2>${profil.nama}</h2>
-        <p><strong>NIP:</strong> ${profil.nip}</p>
-        <p><strong>Satker:</strong> ${profil.satker}</p>
-        <p><strong>Jabatan:</strong> ${profil.jabatan}</p>
-        <p><strong>Kinerja:</strong> ${profil.kinerja}</p>
-      </div>
-    `;
-
-    // 🧩 Tampilkan saran pengembangan
-    saranContainer.innerHTML = ""; // kosongkan kontainer
-    const saranList = saranData.riwayat_saran || [];
-
-    if (saranList.length === 0) {
-      saranContainer.innerHTML = "<p class='loading-text'>Belum ada saran pengembangan.</p>";
+    const container = document.getElementById("saranContainer");
+    if (!container) {
+      console.error("Elemen #saranContainer tidak ditemukan di HTML!");
       return;
     }
 
-    const first3 = saranList
-      .sort((a, b) => new Date(a.tanggal_rekomendasi) - new Date(b.tanggal_rekomendasi))
-      .slice(0, 3);
+    container.innerHTML = "";
 
-    first3.forEach((item, index) => {
+    // ✅ Pastikan array ada dan punya isi
+    if (!data.riwayat_saran || data.riwayat_saran.length === 0) {
+      container.innerHTML = "<p>Tidak ada saran pengembangan ditemukan.</p>";
+      return;
+    }
+
+    // 🔹 Ambil hanya 3 saran pertama
+    const saranTigaPertama = data.riwayat_saran.slice(0, 3);
+
+    saranTigaPertama.forEach((saran) => {
       const card = document.createElement("div");
       card.classList.add("saran-card");
-      card.style.animationDelay = `${index * 0.2}s`;
+
+      // tanggal direformat biar rapi
+      const tanggal = new Date(saran.tanggal_rekomendasi).toLocaleDateString("id-ID");
 
       card.innerHTML = `
-        <h3>${item.kompetensi}</h3>
-        <p><strong>Aspek:</strong> ${item.aspek_kompetensi}</p>
-        <p>${item.saran_pengembangan}</p>
+        <h3>${saran.kompetensi}</h3>
+        <p><strong>Aspek:</strong> ${saran.aspek_kompetensi}</p>
+        <p><strong>Saran:</strong> ${saran.saran_pengembangan}</p>
+        <p><strong>Tanggal:</strong> ${tanggal}</p>
       `;
 
-      // Klik → ke profil pegawai
-      card.addEventListener("click", () => {
-        window.location.href = `profil-pegawai.html?nip=${nip}`;
-      });
-
-      saranContainer.appendChild(card);
+      container.appendChild(card);
     });
-  } catch (err) {
-    console.error("Gagal memuat data:", err);
-    profilContainer.innerHTML = `<p class='loading-text'>Gagal memuat profil pegawai.</p>`;
-    saranContainer.innerHTML = `<p class='loading-text'>Gagal memuat saran pengembangan.</p>`;
-  }
-});
-
-// 🔒 Tombol Logout
-document.querySelector(".c_dashboard-frame24").addEventListener("click", () => {
-  if (confirm("Yakin ingin logout?")) {
-    localStorage.clear();
-    window.location.href = "login-pegawai.html";
+  } catch (error) {
+    console.error("Terjadi kesalahan saat mengambil data saran:", error);
+    const container = document.getElementById("saranContainer");
+    if (container) {
+      container.innerHTML = `<p style="color:red;">Terjadi kesalahan saat memuat data saran.</p>`;
+    }
   }
 });

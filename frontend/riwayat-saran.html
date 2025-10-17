@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Riwayat Saran Pengembangan</title>
+    <link href="./c_profil-pegawai.css" rel="stylesheet" />
+  </head>
+
+  <body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <p><b>Menu</b></p>
+      <p onclick="window.location.href='dashboard.html'">Dashboard</p>
+      <p onclick="window.location.href='simpeg.html'">Simpeg</p>
+      <p onclick="window.location.href='c_profil-pegawai.html'">Profil Pegawai</p>
+      <p onclick="window.location.href='riwayat-saran.html'">Riwayat Saran</p>
+      <p onclick="logout()">Logout</p>
+    </div>
+
+    <!-- Konten utama -->
+    <div class="main-content">
+      <div class="judul">Riwayat Saran Pengembangan</div>
+      <table id="tabelRiwayat">
+        <thead>
+          <tr>
+            <th>Kompetensi</th>
+            <th>Aspek</th>
+            <th>Saran Pengembangan</th>
+            <th>Tanggal Rekomendasi</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script>
+      const saranUrl = `http://localhost:8000/pegawai/profil/saran`;
+
+      async function ambilRiwayat() {
+        try {
+          const res = await fetch(saranUrl);
+          const data = await res.json();
+
+          const tbody = document.querySelector("#tabelRiwayat tbody");
+          tbody.innerHTML = "";
+
+          data.riwayat_saran
+            .filter(item => item.is_selected)
+            .forEach(item => {
+              const tr = document.createElement("tr");
+              tr.innerHTML = `
+                <td>${item.kompetensi}</td>
+                <td>${item.aspek_kompetensi}</td>
+                <td>${item.saran_pengembangan}</td>
+                <td>${new Date(item.tanggal_rekomendasi).toLocaleDateString()}</td>
+              `;
+              tbody.appendChild(tr);
+            });
+        } catch (err) {
+          console.error("Gagal ambil riwayat:", err);
+        }
+      }
+
+      function logout() {
+        localStorage.clear();
+        window.location.href = "login.html";
+      }
+
+      ambilRiwayat();
+    </script>
+  </body>
+</html>

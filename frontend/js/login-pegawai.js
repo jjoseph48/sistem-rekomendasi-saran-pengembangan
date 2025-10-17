@@ -1,5 +1,5 @@
 document.getElementById("btnLogin").addEventListener("click", async () => {
-  const nip = document.getElementById("nip").value.trim();
+  const nip = document.getElementById('nip').value.trim();
 
   if (!nip) {
     alert("Harap masukkan NIP terlebih dahulu.");
@@ -15,8 +15,8 @@ document.getElementById("btnLogin").addEventListener("click", async () => {
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem("nip", data.nip);
-      localStorage.setItem("nama", data.nama);
+      sessionStorage.setItem('nip', data.nip);
+      sessionStorage.setItem('nama', data.nama);
 
       // Tunggu penyimpanan selesai (dalam microtask berikutnya)
       setTimeout(() => {

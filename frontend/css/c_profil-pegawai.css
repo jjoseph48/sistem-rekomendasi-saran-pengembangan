@@ -1,0 +1,196 @@
+/* ======== RESET & FONT ======== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  display: flex;
+  color: #333;
+}
+
+/* ======== SIDEBAR ======== */
+.sidebar {
+  width: 220px;
+  background-color: #fff;
+  border-right: 1px solid #ddd;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  font-size: 18px;
+  color: #444;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar ul li a {
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+  background-color: #e8f0fe;
+  color: #1a73e8;
+  font-weight: 600;
+}
+
+/* ======== MAIN CONTENT ======== */
+main {
+  flex: 1;
+  padding: 40px;
+}
+
+h1 {
+  font-size: 22px;
+  margin-bottom: 15px;
+}
+
+h2 {
+  font-size: 18px;
+  margin: 25px 0 10px;
+  color: #333;
+}
+
+.loading,
+.error {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+/* ======== PROFIL PEGAWAI TABLE ======== */
+.profil-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  background-color: #fff;
+}
+
+.profil-table td {
+  border: 1px solid #aaa;
+  padding: 10px 14px;
+  font-size: 14px;
+}
+
+.profil-table tr td:first-child {
+  width: 120px;
+  font-weight: 600;
+  background-color: #f9f9f9;
+}
+
+/* ======== SARAN PENGEMBANGAN TABLE ======== */
+.saran-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+}
+
+.saran-table th {
+  background-color: #ffeb3b;
+  border: 1px solid #aaa;
+  padding: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.saran-table td {
+  border: 1px solid #aaa;
+  padding: 10px;
+  vertical-align: top;
+  font-size: 14px;
+}
+
+.saran-table td ol {
+  padding-left: 18px;
+  margin: 0;
+}
+
+.saran-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.saran-table tr:hover {
+  background-color: #fffde7;
+}
+
+/* ======== BUTTON ======== */
+button,
+.btn {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s ease;
+}
+
+button:hover,
+.btn:hover {
+  background-color: #155ec0;
+}
+
+/* ======== LOGOUT BUTTON ======== */
+.logout-btn {
+  background-color: #000;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  float: right;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #444;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  main {
+    padding: 20px;
+  }
+
+  .profil-table td,
+  .saran-table td,
+  .saran-table th {
+    font-size: 13px;
+    padding: 8px;
+  }
+
+  button,
+  .btn {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil Pegawai</title>
+  <link rel="stylesheet" href="./css/c_profil-pegawai.css" />
+</head>
+<body>
+  <div class="sidebar">
+    <h2>E-Talenta</h2>
+    <ul>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="profil-pegawai.html" class="active">Profil Pegawai</a></li>
+      <li><a href="riwayat-saran.html">Riwayat Saran</a></li>
+      <li><a href="simpeg.html">Simpeg</a></li>
+    </ul>
+  </div>
+
+  <main>
+    <h1>Profil Pegawai</h1>
+    <table class="profil-table">
+      <tr><td>NIP</td><td>: 123456789</td></tr>
+      <tr><td>Satker</td><td>: Sekretariat Kementerian</td></tr>
+      <tr><td>Jabatan</td><td>: Pranata Komputer Ahli Pertama</td><td>Kinerja: Baik</td></tr>
+    </table>
+
+    <h2>Saran Pengembangan</h2>
+    <table id="tabelSaran" class="saran-table">
+      <thead>
+        <tr>
+          <th>Kompetensi</th>
+          <th>Standar Level</th>
+          <th>Nilai</th>
+          <th>Gap</th>
+          <th>Aspek</th>
+          <th>Saran Pengembangan</th>
+        </tr>
+      </thead>
+      <tbody id="tabelBody">
+        <tr><td colspan="6" class="loading">Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </main>
+
+  <script src="./js/profil-pegawai.js"></script>
+</body>
+</html>
