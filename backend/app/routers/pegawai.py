@@ -40,6 +40,7 @@ def get_saran_by_nip(nip: str, db: Session = Depends(get_db)):
         if s.feedbacks:
             last_fb = s.feedbacks[-1].feedback
         hasil.append({
+            "saran_id": s.id,
             "kompetensi": s.kompetensi,
             "aspek_kompetensi": s.aspek_kompetensi,
             "saran_pengembangan": s.saran_pengembangan,

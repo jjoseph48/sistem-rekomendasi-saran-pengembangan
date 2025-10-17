@@ -5,43 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profil Pegawai</title>
   <link rel="stylesheet" href="./css/c_profil-pegawai.css" />
+  <style>
+    /* Tambahan styling untuk modal */
+    #modalSaran {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 10px;
+      padding: 20px 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      width: 400px;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-buttons {
+      margin-top: 15px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .modal-buttons button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      cursor: pointer;
+    }
+
+    .modal-buttons button:hover {
+      background-color: #1e40af;
+    }
+
+    .modal-buttons .cancel {
+      background-color: #6b7280;
+    }
+
+    .modal-buttons .cancel:hover {
+      background-color: #4b5563;
+    }
+  </style>
 </head>
 <body>
   <div class="sidebar">
     <h2>E-Talenta</h2>
     <ul>
-      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="dashboard-pegawai.html">Dashboard</a></li>
       <li><a href="profil-pegawai.html" class="active">Profil Pegawai</a></li>
       <li><a href="riwayat-saran.html">Riwayat Saran</a></li>
-      <li><a href="simpeg.html">Simpeg</a></li>
+      <li><a href="https://simpeg.kemenpar.go.id/">Simpeg</a></li>
     </ul>
   </div>
 
   <main>
     <h1>Profil Pegawai</h1>
     <table class="profil-table">
-      <tr><td>NIP</td><td>: 123456789</td></tr>
-      <tr><td>Satker</td><td>: Sekretariat Kementerian</td></tr>
-      <tr><td>Jabatan</td><td>: Pranata Komputer Ahli Pertama</td><td>Kinerja: Baik</td></tr>
+      <tr><td>Nama</td><td id="nama">-</td></tr>
+      <tr><td>NIP</td><td id="nip">-</td></tr>
+      <tr><td>Satker</td><td id="satker">-</td></tr>
+      <tr><td>Jabatan</td><td id="jabatan">-</td></tr>
+      <tr><td>Kinerja</td><td id="kinerja">-</td></tr>
     </table>
 
     <h2>Saran Pengembangan</h2>
+    <p>Pilih satu saran di tiap satu kompetensi untuk ditindaklanjuti oleh Biro Sumber 
+      Daya Manusia dan Organisasi Kementerian Pariwisata. Misalkan, untuk kompetensi 
+      <b>Kerjasama</b>, Anda bisa memilih <b>seminar</b> untuk aspek <b>Pengetahuan</b>, <b>pelatihan</b> untuk aspek 
+      <b>Keahlian</b> dan <b>coaching</b> untuk aspek <b>Personal Attribute</b>
+    </p>
+    <br>
+
     <table id="tabelSaran" class="saran-table">
       <thead>
         <tr>
           <th>Kompetensi</th>
-          <th>Standar Level</th>
-          <th>Nilai</th>
-          <th>Gap</th>
           <th>Aspek</th>
           <th>Saran Pengembangan</th>
+          <th>Tanggal</th>
+          <th>Aksi</th>
         </tr>
       </thead>
-      <tbody id="tabelBody">
-        <tr><td colspan="6" class="loading">Memuat data...</td></tr>
+      <tbody>
+        <tr><td colspan="5" class="loading">Memuat data...</td></tr>
       </tbody>
     </table>
   </main>
+
+  <!-- ✅ Modal baru -->
+  <div id="modalSaran">
+    <div class="modal-content">
+      <h3>Konfirmasi Pilihan Saran</h3>
+      <p id="modalText"></p>
+      <div class="modal-buttons">
+        <button id="btnSimpan">Simpan</button>
+        <button class="cancel" onclick="tutupModal()">Batal</button>
+      </div>
+    </div>
+  </div>
 
   <script src="./js/profil-pegawai.js"></script>
 </body>
