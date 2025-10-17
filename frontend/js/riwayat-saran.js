@@ -1,67 +1,88 @@
 const nip =
   new URLSearchParams(window.location.search).get("nip") ||
-  localStorage.getItem("pegawai_nip");
+  localStorage.getItem("pegawai_nip") ||
+  sessionStorage.getItem("pegawai_nip");
 
 const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
-const feedbackUrl = `http://localhost:8000/feedback`;
+const feedbackUrl = `http://localhost:8000/feedback/${nip}`;
 
-let saranTerpilih = [];
+let daftarSaran = [];
 let saranAktif = null;
 
-// === Ambil Data Saran yang Dipilih ===
+// === Ambil data saran & feedback ===
 async function ambilRiwayat() {
   try {
-    const res = await fetch(saranUrl);
-    if (!res.ok) throw new Error("Gagal ambil data saran");
-    const data = await res.json();
+    const [resSaran, resFeedback] = await Promise.all([
+      fetch(saranUrl),
+      fetch(`${feedbackUrl}/${nip}`),
+    ]);
 
-    const tbody = document.querySelector("#tabelRiwayat tbody");
-    tbody.innerHTML = "";
+    const dataSaran = await resSaran.json();
+    const dataFeedback = resFeedback.ok ? await resFeedback.json() : [];
 
-    saranTerpilih = data.riwayat_saran.filter((s) => s.is_selected);
+    daftarSaran = (dataSaran.riwayat_saran || [])
+      .filter((s) => s.is_selected)
+      .map((s) => ({
+        ...s,
+        feedback_terakhir:
+          dataFeedback.find((f) => f.saran_id === s.saran_id)?.feedback ||
+          s.feedback_terakhir ||
+          null,
+      }));
 
-    if (saranTerpilih.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='6'>Belum ada saran yang dipilih.</td></tr>";
-      return;
-    }
-
-    saranTerpilih.forEach((item) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${item.kompetensi}</td>
-        <td>${item.aspek_kompetensi}</td>
-        <td>${item.saran_pengembangan}</td>
-        <td>${new Date(item.tanggal_rekomendasi).toLocaleDateString()}</td>
-        <td>${item.feedback_terakhir || "-"}</td>
-        <td>
-          <button class="btn-feedback" data-id="${item.id}">
-            ${item.feedback_terakhir ? "Edit ✏️" : "Berikan Feedback 💬"}
-          </button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    document.querySelectorAll(".btn-feedback").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const id = e.target.dataset.id;
-        bukaModalFeedback(id);
-      });
-    });
+    renderTabel();
   } catch (err) {
-    console.error(err);
+    console.error("Gagal ambil data:", err);
   }
 }
 
-// === Modal Feedback ===
+// === Render tabel ===
+function renderTabel() {
+  const tbody = document.querySelector("#tabelRiwayat tbody");
+  tbody.innerHTML = "";
+
+  if (daftarSaran.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='6'>Belum ada saran yang dipilih.</td></tr>";
+    return;
+  }
+
+  daftarSaran.forEach((item, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${item.kompetensi}</td>
+      <td>${item.aspek_kompetensi}</td>
+      <td>${item.saran_pengembangan}</td>
+      <td>${item.feedback_terakhir || "-"}</td>
+      <td>
+        <button class="btn-feedback" data-id="${item.saran_id}">
+          ${item.feedback_terakhir ? "Edit ✏️" : "Feedback 💬"}
+        </button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.querySelectorAll(".btn-feedback").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const id = parseInt(e.target.dataset.id);
+      bukaModalFeedback(id);
+    });
+  });
+}
+
+// === Modal ===
 function bukaModalFeedback(saranId) {
-  saranAktif = saranTerpilih.find((s) => s.id == saranId);
+  saranAktif = daftarSaran.find((s) => s.saran_id === saranId);
   if (!saranAktif) return;
 
+  document.getElementById("modalJudul").textContent = saranAktif.feedback_terakhir
+    ? "Edit Feedback"
+    : "Berikan Feedback";
+
   document.getElementById("modalSaranTeks").textContent = `"${saranAktif.saran_pengembangan}"`;
-  document.getElementById("inputFeedback").value = saranAktif.feedback_terakhir || "";
-  document.getElementById("modalJudul").textContent =
-    saranAktif.feedback_terakhir ? "Edit Feedback" : "Berikan Feedback";
+  document.getElementById("pilihFeedback").value =
+    saranAktif.feedback_terakhir || "";
   document.getElementById("modalFeedback").style.display = "flex";
 }
 
@@ -79,17 +100,18 @@ document.getElementById("btnKirimFeedback").addEventListener("click", async () =
   }
 
   const payload = {
-    saran_id: saranAktif.id,
+    saran_id: saranAktif.saran_id,
     nip: nip,
     feedback: teksFeedback,
   };
 
   try {
-    // cek apakah feedback sudah pernah dikirim
+    // Pilih method dan URL sesuai kondisi
     const method = saranAktif.feedback_terakhir ? "PUT" : "POST";
-    const url = saranAktif.feedback_terakhir
-      ? `${feedbackUrl}/${saranAktif.id}`
-      : `${feedbackUrl}`;
+    const url =
+      method === "PUT"
+        ? `http://localhost:8000/feedback/${saranAktif.saran_id}`
+        : `http://localhost:8000/feedback`;
 
     const res = await fetch(url, {
       method,
@@ -98,7 +120,7 @@ document.getElementById("btnKirimFeedback").addEventListener("click", async () =
     });
 
     if (!res.ok) throw new Error("Gagal kirim feedback");
-    alert("Feedback berhasil disimpan!");
+    alert("✅ Feedback berhasil disimpan!");
 
     tutupModalFeedback();
     ambilRiwayat(); // refresh tabel
@@ -109,6 +131,13 @@ document.getElementById("btnKirimFeedback").addEventListener("click", async () =
 });
 
 document.getElementById("btnBatalFeedback").addEventListener("click", tutupModalFeedback);
+
+// === Logout ===
+function logout() {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = "login-pegawai.html";
+}
 
 // === Inisialisasi ===
 ambilRiwayat();
