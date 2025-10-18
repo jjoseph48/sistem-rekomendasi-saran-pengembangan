@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!response.ok) throw new Error(`Gagal memuat data (${response.status})`);
 
     const data = await response.json();
-    console.log("✅ Data saran:", data);
+    console.log("✅ Data saran diterima:", data);
 
     const container = document.getElementById("saranContainer");
     if (!container) {
@@ -40,7 +40,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     container.innerHTML = "";
 
-    const daftarSaran = data.riwayat_saran || [];
+    // === Pastikan kita ambil dari data.riwayat_saran (berdasarkan struktur backend) ===
+    const daftarSaran = Array.isArray(data.riwayat_saran)
+      ? data.riwayat_saran
+      : [];
 
     // 🔹 Jika tidak ada saran
     if (daftarSaran.length === 0) {
@@ -48,8 +51,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    // === Ambil 3 saran terbaru berdasarkan tanggal_rekomendasi ===
+    // === Urutkan berdasarkan tanggal_rekomendasi (terbaru di atas)
     const tigaSaranTerbaru = daftarSaran
+      .filter((item) => item.saran_pengembangan) // hanya yang punya saran
       .sort(
         (a, b) =>
           new Date(b.tanggal_rekomendasi) - new Date(a.tanggal_rekomendasi)
@@ -61,16 +65,26 @@ document.addEventListener("DOMContentLoaded", async () => {
       const card = document.createElement("div");
       card.classList.add("saran-card");
 
-      const tanggal = new Date(saran.tanggal_rekomendasi).toLocaleDateString(
-        "id-ID",
-        { day: "2-digit", month: "long", year: "numeric" }
-      );
+      // Format tanggal (fallback ke "-")
+      const tanggal = saran.tanggal_rekomendasi
+        ? new Date(saran.tanggal_rekomendasi).toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          })
+        : "-";
+
+      // Label jika terpilih
+      const labelSelected = saran.is_selected
+        ? `<span class="selected-label">★ Terpilih</span>`
+        : "";
 
       card.innerHTML = `
-        <h3>${saran.kompetensi}</h3>
-        <p><strong>Aspek:</strong> ${saran.aspek_kompetensi}</p>
-        <p><strong>Saran:</strong> ${saran.saran_pengembangan}</p>
+        <h3>${saran.kompetensi || "-"}</h3>
+        <p><strong>Aspek:</strong> ${saran.aspek_kompetensi || "-"}</p>
+        <p><strong>Saran:</strong> ${saran.saran_pengembangan || "-"}</p>
         <p><strong>Tanggal:</strong> ${tanggal}</p>
+        ${labelSelected}
       `;
 
       container.appendChild(card);

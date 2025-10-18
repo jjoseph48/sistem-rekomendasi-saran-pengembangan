@@ -4,7 +4,7 @@ const nip =
   sessionStorage.getItem("nip");
 
 const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
-const feedbackUrl = `http://localhost:8000/feedback`;
+const feedbackUrl = `http://localhost:8000/pegawai/feedback`;
 
 let daftarSaran = [];
 let saranAktif = null;
@@ -14,25 +14,13 @@ async function ambilRiwayat() {
   try {
     if (!nip) throw new Error("NIP tidak ditemukan di sesi.");
 
-    const [resSaran, resFeedback] = await Promise.all([
-      fetch(saranUrl),
-      fetch(`${feedbackUrl}/${nip}`),
-    ]);
+    const res = await fetch(saranUrl);
+    if (!res.ok) throw new Error("Gagal mengambil data saran.");
 
-    if (!resSaran.ok) throw new Error("Gagal mengambil data saran");
-    const dataSaran = await resSaran.json();
-
-    const dataFeedback = resFeedback.ok ? await resFeedback.json() : [];
-
-    daftarSaran = (dataSaran.riwayat_saran || [])
-      .filter((s) => s.is_selected)
-      .map((s) => ({
-        ...s,
-        feedback_terakhir:
-          dataFeedback.find((f) => f.saran_id === s.saran_id)?.feedback ||
-          s.feedback_terakhir ||
-          null,
-      }));
+    const data = await res.json();
+    daftarSaran = Array.isArray(data)
+      ? data.filter((s) => s.is_selected)
+      : (data.riwayat_saran || []).filter((s) => s.is_selected);
 
     renderTabel();
   } catch (err) {
@@ -60,12 +48,15 @@ function renderTabel() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${i + 1}</td>
-      <td>${item.kompetensi}</td>
-      <td>${item.aspek_kompetensi}</td>
-      <td>${item.saran_pengembangan}</td>
-      <td>${item.feedback_terakhir || "-"}</td>
+      <td>${item.kompetensi || "-"}</td>
+      <td>${item.aspek_kompetensi || "-"}</td>
+      <td>${item.saran_pengembangan || "-"}</td>
       <td>
-        <button class="btn-feedback" data-id="${item.saran_id}">
+        ${item.feedback_terakhir || "Tidak Ada Feedback"}
+        ${item.tanggal_feedback ? `<br><small>${new Date(item.tanggal_feedback).toLocaleString("id-ID")}</small>` : ""}
+      </td>
+      <td>
+        <button class="btn-feedback" data-id="${item.saran_id || item.id}">
           ${item.feedback_terakhir ? "Edit ✏️" : "Feedback 💬"}
         </button>
       </td>
@@ -83,7 +74,7 @@ function renderTabel() {
 
 // === Modal Feedback ===
 function bukaModalFeedback(saranId) {
-  saranAktif = daftarSaran.find((s) => s.saran_id === saranId);
+  saranAktif = daftarSaran.find((s) => s.saran_id === saranId || s.id === saranId);
   if (!saranAktif) {
     alert("Saran tidak ditemukan!");
     return;
@@ -93,8 +84,12 @@ function bukaModalFeedback(saranId) {
     ? "Edit Feedback"
     : "Berikan Feedback";
 
-  document.getElementById("modalSaranTeks").textContent = `"${saranAktif.saran_pengembangan}"`;
-  document.getElementById("inputFeedback").value = saranAktif.feedback_terakhir || "";
+  document.getElementById("modalSaranTeks").textContent =
+    `"${saranAktif.saran_pengembangan}" (${saranAktif.aspek_kompetensi})`;
+
+  const select = document.getElementById("inputFeedback");
+  select.value = saranAktif.feedback_terakhir || "";
+
   document.getElementById("modalFeedback").style.display = "flex";
 }
 
@@ -105,34 +100,34 @@ function tutupModalFeedback() {
 
 // === Kirim / Edit Feedback ===
 document.getElementById("btnKirimFeedback").addEventListener("click", async () => {
-  const teksFeedback = document.getElementById("inputFeedback").value.trim();
+  const select = document.getElementById("inputFeedback");
+  const teksFeedback = select.value.trim();
+
   if (!saranAktif || !teksFeedback) {
-    alert("Feedback tidak boleh kosong!");
+    alert("Silakan pilih salah satu opsi feedback!");
     return;
   }
 
   const payload = {
-    saran_id: saranAktif.saran_id,
+    saran_id: saranAktif.saran_id || saranAktif.id,
     nip,
     feedback: teksFeedback,
   };
 
   try {
-    const method = saranAktif.feedback_terakhir ? "PUT" : "POST";
-    const url =
-      method === "PUT"
-        ? `${feedbackUrl}/${saranAktif.saran_id}`
-        : feedbackUrl;
-
-    const res = await fetch(url, {
-      method,
+    const res = await fetch(feedbackUrl, {
+      method: "POST", // cukup POST karena API akan handle create/update otomatis
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error("Gagal mengirim feedback");
-    alert("✅ Feedback berhasil disimpan!");
+    if (!res.ok) {
+      const errMsg = await res.text();
+      throw new Error(errMsg || "Gagal menyimpan feedback");
+    }
 
+    const result = await res.json();
+    alert(`✅ ${result.message || "Feedback berhasil disimpan!"}`);
     tutupModalFeedback();
     ambilRiwayat(); // refresh tabel
   } catch (err) {

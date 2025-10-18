@@ -63,7 +63,6 @@ def register_pegawai(data: dict, db: Session = Depends(get_db)):
                     kompetensi=item["nama_kompetensi"],
                     aspek_kompetensi=aspek,
                     saran_pengembangan=s,
-                    feedback_terakhir=feedback_terakhir
                 )
                 db.add(record)
     db.commit()

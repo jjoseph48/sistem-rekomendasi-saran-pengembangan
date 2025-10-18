@@ -26,9 +26,9 @@ class Pegawai(Base):
     nip = Column(String, unique=True, index=True)
     satker = Column(String)
     jabatan = Column(String)
-    kinerja = Column(String)  # 🔹 tambahan baru
-    
-    # 🔹 Relasi ke tabel lain
+    kinerja = Column(String)
+
+    # Relasi ke tabel lain
     kompetensi = relationship("KompetensiPegawai", back_populates="pegawai", cascade="all, delete-orphan")
     saran_pengembangan = relationship("SaranPengembangan", back_populates="pegawai", cascade="all, delete-orphan")
 
@@ -60,16 +60,15 @@ class SaranPengembangan(Base):
     kompetensi = Column(String(255), nullable=False)
     aspek_kompetensi = Column(String(100), nullable=False)
     saran_pengembangan = Column(String, nullable=False)
-    feedback_terakhir = Column(String(50), default="Tidak Ada")
     tanggal_rekomendasi = Column(DateTime, default=datetime.utcnow)
     is_selected = Column(Boolean, default=False)
 
+    # 🔹 Tambahkan foreign key ke Feedback
+    feedback_id = Column(Integer, ForeignKey("feedback.id"), nullable=True)
 
-    # 🔹 Relationship ke Pegawai
+    # 🔹 Relationship
     pegawai = relationship("Pegawai", back_populates="saran_pengembangan")
-
-    # 🔹 Relationship ke Feedback (tambahan agar back_populates valid)
-    feedbacks = relationship("Feedback", back_populates="saran_pengembangan", cascade="all, delete-orphan")
+    feedback = relationship("Feedback", back_populates="saran", uselist=False)
 
 
 # =======================
@@ -79,10 +78,9 @@ class Feedback(Base):
     __tablename__ = "feedback"
 
     id = Column(Integer, primary_key=True, index=True)
-    saran_id = Column(Integer, ForeignKey("saran_pengembangan.id"))
     nip = Column(String, index=True)
     feedback = Column(String)
     tanggal_feedback = Column(DateTime, default=datetime.utcnow)
 
     # 🔹 Relasi balik ke SaranPengembangan
-    saran_pengembangan = relationship("SaranPengembangan", back_populates="feedbacks")
+    saran = relationship("SaranPengembangan", back_populates="feedback", uselist=False)

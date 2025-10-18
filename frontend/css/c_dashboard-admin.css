@@ -1,16 +1,31 @@
-body {
-  font-family: "Poppins", sans-serif;
-  background: #f5f7fa;
+/* === GLOBAL === */
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
 }
 
+body {
+  background: #f4f6f9;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* === HEADER === */
 .dashboard-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   background: #1565c0;
   color: white;
   padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.dashboard-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .logout-btn {
@@ -18,28 +33,43 @@ body {
   border: none;
   color: white;
   font-weight: 600;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.logout-btn:hover {
+  background: #d32f2f;
+}
+
+/* === MAIN === */
 .dashboard-main {
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
+/* === TABS === */
 .tabs {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .tab {
-  padding: 0.7rem 1.5rem;
+  padding: 0.7rem 1.4rem;
   border: none;
   border-radius: 8px;
   background: #e3f2fd;
   font-weight: 600;
+  color: #1565c0;
   cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.tab:hover {
+  background: #bbdefb;
 }
 
 .tab.active {
@@ -47,17 +77,47 @@ body {
   color: white;
 }
 
-.search-box {
+/* === TAB CONTENT === */
+.tab-content {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === SEARCH & FILTER === */
+.search-box,
+.filter-bar {
+  display: flex;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
 
-.search-box input {
-  width: 100%;
+.search-box input,
+.filter-bar input,
+.filter-bar select {
+  flex: 1;
   padding: 0.7rem;
-  border-radius: 8px;
   border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: all 0.2s ease;
 }
 
+.search-box input:focus,
+.filter-bar input:focus,
+.filter-bar select:focus {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 3px rgba(21,101,192,0.2);
+}
+
+/* === TABLE === */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -66,26 +126,33 @@ table {
   overflow: hidden;
 }
 
+thead {
+  background: #e3f2fd;
+}
+
 th, td {
-  padding: 0.8rem;
+  padding: 0.9rem;
   text-align: left;
   border-bottom: 1px solid #eee;
 }
 
 th {
-  background: #e3f2fd;
   font-weight: 700;
+  color: #1565c0;
 }
 
-tr:hover {
-  background: #f9f9f9;
+tbody tr:hover {
+  background: #f9fbff;
 }
 
+/* === BUTTONS IN TABLE === */
 button.action-btn {
   border: none;
   padding: 0.4rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 button.edit-btn {
@@ -99,7 +166,15 @@ button.delete-btn {
   margin-left: 0.5rem;
 }
 
-/* Modal Style */
+button.edit-btn:hover {
+  background: #1e88e5;
+}
+
+button.delete-btn:hover {
+  background: #d32f2f;
+}
+
+/* === MODAL === */
 .modal {
   display: none;
   position: fixed;
@@ -108,6 +183,7 @@ button.delete-btn {
   background: rgba(0, 0, 0, 0.4);
   justify-content: center;
   align-items: center;
+  z-index: 1000;
 }
 
 .modal-content {
@@ -119,15 +195,37 @@ button.delete-btn {
   animation: popIn 0.3s ease;
 }
 
+@keyframes popIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 .modal-content h2 {
   margin-top: 0;
   color: #1565c0;
 }
 
+.modal-content label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.modal-content select,
+.modal-content textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-top: 0.3rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   gap: 0.5rem;
 }
 
@@ -136,6 +234,7 @@ button.delete-btn {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
 }
 
 #saveEditBtn {
@@ -145,9 +244,36 @@ button.delete-btn {
 
 #cancelEditBtn {
   background: #ccc;
+  color: black;
 }
 
-@keyframes popIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+#saveEditBtn:hover {
+  background: #0d47a1;
+}
+
+#cancelEditBtn:hover {
+  background: #b0b0b0;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .dashboard-main {
+    padding: 1rem;
+  }
+
+  .tabs {
+    flex-direction: column;
+  }
+
+  th, td {
+    font-size: 0.85rem;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
 }

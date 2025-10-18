@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnSubmit = document.getElementById("btnSubmit");
   const btnBatal = document.getElementById("btnBatal");
   const btnKembali = document.getElementById("btnKembali");
-  const messageBox = document.getElementById("messageBox"); // Tambahkan di HTML
+  const messageBox = document.getElementById("messageBox");
 
   const daftarKompetensi = [
     "Integritas",
@@ -84,19 +84,24 @@ document.addEventListener("DOMContentLoaded", () => {
       kompetensi: [],
     };
 
-    // Cek minimal data dasar
     if (!data.nama || !data.nip) {
       showMessage("⚠️ Nama dan NIP wajib diisi sebelum submit.", "error");
       return;
     }
 
+    // Ambil data kompetensi
     document.querySelectorAll(".kompetensi-card").forEach((card, i) => {
       const nama_kompetensi = daftarKompetensi[i];
-      const standar_level = parseFloat(card.querySelector(".input-standar").value);
-      const capaian_nilai = parseFloat(card.querySelector(".input-capaian").value);
-      const gap_kompetensi = parseFloat(card.querySelector(".input-gap").value);
+      const standar_level = parseFloat(card.querySelector(".input-standar").value) || 0;
+      const capaian_nilai = parseFloat(card.querySelector(".input-capaian").value) || 0;
+      const gap_kompetensi = parseFloat(card.querySelector(".input-gap").value) || 0;
 
-      data.kompetensi.push({ nama_kompetensi, standar_level, capaian_nilai, gap_kompetensi });
+      data.kompetensi.push({
+        nama_kompetensi,
+        standar_level,
+        capaian_nilai,
+        gap_kompetensi,
+      });
     });
 
     try {
@@ -109,7 +114,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const result = await res.json();
 
       if (!res.ok) {
-        showMessage(result.detail || "❌ Gagal melakukan registrasi. Pastikan data sudah benar.", "error");
+        showMessage(
+          result.detail || "❌ Gagal melakukan registrasi. Pastikan data sudah benar.",
+          "error"
+        );
         return;
       }
 
@@ -118,17 +126,16 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => {
         window.location.href = "login-pegawai.html";
       }, 1500);
-
     } catch (err) {
       console.error(err);
       showMessage("❌ Tidak dapat terhubung ke server.", "error");
     }
   });
 
-  // === Helper untuk pesan visual ===
+  // === Helper Message ===
   function showMessage(msg, type = "info") {
     messageBox.textContent = msg;
-    messageBox.className = type; // gunakan CSS class .success / .error / .info
+    messageBox.className = type;
   }
 
   function clearMessage() {

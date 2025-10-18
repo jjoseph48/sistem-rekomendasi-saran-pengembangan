@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // === Ambil Profil Pegawai ===
   try {
     const resProfil = await fetch(profilUrl);
-    if (!resProfil.ok) throw new Error("Gagal mengambil profil");
+    if (!resProfil.ok) throw new Error("Gagal mengambil profil pegawai");
     const profil = await resProfil.json();
 
     document.getElementById("nip").textContent = profil.nip || "-";
@@ -33,13 +33,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("❌ Gagal memuat profil:", err);
   }
 
-  // === Ambil Data Saran ===
+  // === Ambil Data Saran Pengembangan ===
   try {
     const resSaran = await fetch(saranUrl);
     if (!resSaran.ok) throw new Error("Gagal mengambil data saran");
-    const dataSaran = await resSaran.json();
 
-    semuaSaran = dataSaran.riwayat_saran || [];
+    const dataSaran = await resSaran.json();
+    // 🔹 Pastikan response adalah array
+    semuaSaran = Array.isArray(dataSaran) ? dataSaran : dataSaran.riwayat_saran || [];
+
     const tbody = document.querySelector("#tabelSaran tbody");
     tbody.innerHTML = "";
 
@@ -67,23 +69,29 @@ document.addEventListener("DOMContentLoaded", async () => {
       return indexA - indexB;
     });
 
-    // Render tabel saran
+    // === Render tabel saran ===
     semuaSaran.forEach((item, index) => {
       const saranId = item.id || item.saran_id;
+      const feedbackText = item.feedback_id ? `#${item.feedback_id}` : "Tidak Ada Feedback";
+
       const tr = document.createElement("tr");
-
       tr.innerHTML = `
-        <td>${index + 1}</td>
-        <td>${item.kompetensi}</td>
-        <td>${item.aspek_kompetensi}</td>
-        <td>${item.saran_pengembangan}</td>
-        <td><button class="btn-pilih" data-id="${saranId}">Pilih</button></td>
+        <td>${item.kompetensi || "-"}</td>
+        <td>${item.aspek_kompetensi || "-"}</td>
+        <td>${item.saran_pengembangan || "-"}</td>
+        <td>${feedbackText}</td>
+        <td>
+          <button class="btn-pilih" data-id="${saranId}" ${
+        item.is_selected ? "disabled" : ""
+      }>
+            ${item.is_selected ? "Sudah Dipilih" : "Pilih"}
+          </button>
+        </td>
       `;
-
       tbody.appendChild(tr);
     });
 
-    // Tambahkan event listener untuk tombol pilih
+    // === Event tombol pilih ===
     document.querySelectorAll(".btn-pilih").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const saranId = parseInt(e.target.dataset.id);
@@ -91,10 +99,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
     });
   } catch (err) {
-    console.error("❌ Gagal memuat saran:", err);
+    console.error("❌ Gagal memuat data saran:", err);
   }
 
-  // === Fungsi Modal ===
+  // === Modal Pilihan ===
   function bukaModal(saranId) {
     saranDipilih = semuaSaran.find(
       (s) => s.id === saranId || s.saran_id === saranId
@@ -132,6 +140,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       const hasil = await res.json();
       alert(`✅ ${hasil.message}`);
       tutupModal();
+
+      // Refresh halaman setelah pilih
       window.location.href = "riwayat-saran.html";
     } catch (err) {
       console.error("❌ Gagal menyimpan saran:", err);
@@ -139,7 +149,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // === Tombol Tutup Modal ===
+  // === Tutup Modal ===
   document.getElementById("btnTutup").addEventListener("click", tutupModal);
 
   // === Logout ===

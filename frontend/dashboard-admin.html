@@ -18,7 +18,8 @@
     <!-- Tabs Navigation -->
     <div class="tabs">
       <button class="tab active" id="tabPegawai">Data Pegawai</button>
-      <button class="tab" id="tabSaran">Data Saran</button>
+      <button class="tab" id="tabSaran">Saran Pengembangan</button>
+      <button class="tab" id="tabFeedback">Feedback Terakhir</button>
     </div>
 
     <!-- TAB CONTENTS -->
@@ -44,8 +45,14 @@
 
       <!-- DATA SARAN -->
       <div class="tab-content" id="saranContent" style="display: none;">
-        <div class="search-box">
+        <div class="filter-bar">
           <input type="text" id="searchSaran" placeholder="Cari nama pegawai..." />
+          <select id="filterAspek">
+            <option value="">Semua Aspek</option>
+            <option value="Pengetahuan">Pengetahuan</option>
+            <option value="Keahlian">Keahlian</option>
+            <option value="Personal Attribute">Personal Attribute</option>
+          </select>
         </div>
         <table id="saranTable">
           <thead>
@@ -56,6 +63,25 @@
               <th>Saran Pengembangan</th>
               <th>Feedback Terakhir</th>
               <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- DATA FEEDBACK -->
+      <div class="tab-content" id="feedbackContent" style="display: none;">
+        <div class="search-box">
+          <input type="text" id="searchFeedback" placeholder="Cari nama pegawai..." />
+        </div>
+        <table id="feedbackTable">
+          <thead>
+            <tr>
+              <th>Nama Pegawai</th>
+              <th>Kompetensi</th>
+              <th>Aspek Kompetensi</th>
+              <th>Feedback</th>
+              <th>Tanggal</th>
             </tr>
           </thead>
           <tbody></tbody>
