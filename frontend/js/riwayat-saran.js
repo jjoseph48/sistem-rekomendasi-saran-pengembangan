@@ -1,23 +1,27 @@
+// === Ambil NIP dari URL atau session ===
 const nip =
   new URLSearchParams(window.location.search).get("nip") ||
-  localStorage.getItem("pegawai_nip") ||
-  sessionStorage.getItem("pegawai_nip");
+  sessionStorage.getItem("nip");
 
 const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
-const feedbackUrl = `http://localhost:8000/feedback/${nip}`;
+const feedbackUrl = `http://localhost:8000/feedback`;
 
 let daftarSaran = [];
 let saranAktif = null;
 
-// === Ambil data saran & feedback ===
+// === Ambil Data Riwayat (Saran + Feedback) ===
 async function ambilRiwayat() {
   try {
+    if (!nip) throw new Error("NIP tidak ditemukan di sesi.");
+
     const [resSaran, resFeedback] = await Promise.all([
       fetch(saranUrl),
       fetch(`${feedbackUrl}/${nip}`),
     ]);
 
+    if (!resSaran.ok) throw new Error("Gagal mengambil data saran");
     const dataSaran = await resSaran.json();
+
     const dataFeedback = resFeedback.ok ? await resFeedback.json() : [];
 
     daftarSaran = (dataSaran.riwayat_saran || [])
@@ -32,13 +36,19 @@ async function ambilRiwayat() {
 
     renderTabel();
   } catch (err) {
-    console.error("Gagal ambil data:", err);
+    console.error("❌ Gagal memuat data:", err);
+    const tbody = document.querySelector("#tabelRiwayat tbody");
+    if (tbody) {
+      tbody.innerHTML = `<tr><td colspan="6">Terjadi kesalahan: ${err.message}</td></tr>`;
+    }
   }
 }
 
-// === Render tabel ===
+// === Render Data ke Tabel ===
 function renderTabel() {
   const tbody = document.querySelector("#tabelRiwayat tbody");
+  if (!tbody) return;
+
   tbody.innerHTML = "";
 
   if (daftarSaran.length === 0) {
@@ -71,18 +81,20 @@ function renderTabel() {
   });
 }
 
-// === Modal ===
+// === Modal Feedback ===
 function bukaModalFeedback(saranId) {
   saranAktif = daftarSaran.find((s) => s.saran_id === saranId);
-  if (!saranAktif) return;
+  if (!saranAktif) {
+    alert("Saran tidak ditemukan!");
+    return;
+  }
 
   document.getElementById("modalJudul").textContent = saranAktif.feedback_terakhir
     ? "Edit Feedback"
     : "Berikan Feedback";
 
   document.getElementById("modalSaranTeks").textContent = `"${saranAktif.saran_pengembangan}"`;
-  document.getElementById("pilihFeedback").value =
-    saranAktif.feedback_terakhir || "";
+  document.getElementById("inputFeedback").value = saranAktif.feedback_terakhir || "";
   document.getElementById("modalFeedback").style.display = "flex";
 }
 
@@ -101,17 +113,16 @@ document.getElementById("btnKirimFeedback").addEventListener("click", async () =
 
   const payload = {
     saran_id: saranAktif.saran_id,
-    nip: nip,
+    nip,
     feedback: teksFeedback,
   };
 
   try {
-    // Pilih method dan URL sesuai kondisi
     const method = saranAktif.feedback_terakhir ? "PUT" : "POST";
     const url =
       method === "PUT"
-        ? `http://localhost:8000/feedback/${saranAktif.saran_id}`
-        : `http://localhost:8000/feedback`;
+        ? `${feedbackUrl}/${saranAktif.saran_id}`
+        : feedbackUrl;
 
     const res = await fetch(url, {
       method,
@@ -119,13 +130,13 @@ document.getElementById("btnKirimFeedback").addEventListener("click", async () =
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) throw new Error("Gagal kirim feedback");
+    if (!res.ok) throw new Error("Gagal mengirim feedback");
     alert("✅ Feedback berhasil disimpan!");
 
     tutupModalFeedback();
     ambilRiwayat(); // refresh tabel
   } catch (err) {
-    console.error("Gagal kirim feedback:", err);
+    console.error("❌ Gagal kirim feedback:", err);
     alert("Terjadi kesalahan saat menyimpan feedback.");
   }
 });
@@ -139,5 +150,5 @@ function logout() {
   window.location.href = "login-pegawai.html";
 }
 
-// === Inisialisasi ===
-ambilRiwayat();
+// === Jalankan saat halaman dimuat ===
+document.addEventListener("DOMContentLoaded", ambilRiwayat);

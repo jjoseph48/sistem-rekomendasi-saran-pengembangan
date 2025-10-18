@@ -1,38 +1,45 @@
-const nip =
-  new URLSearchParams(window.location.search).get("nip") ||
-  localStorage.getItem("pegawai_nip");
+document.addEventListener("DOMContentLoaded", async () => {
+  // === Ambil NIP dari sessionStorage atau query parameter ===
+  const nip =
+    new URLSearchParams(window.location.search).get("nip") ||
+    sessionStorage.getItem("nip");
 
-const profilUrl = `http://localhost:8000/pegawai/profile/${nip}`;
-const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
+  console.log("NIP Pegawai:", nip);
 
-let semuaSaran = []; // simpan seluruh data response JSON
-let saranDipilih = null; // hanya menyimpan saran yang diklik
-
-// === Ambil Data Profil ===
-async function ambilProfil() {
-  try {
-    const res = await fetch(profilUrl);
-    if (!res.ok) throw new Error("Gagal ambil profil");
-    const data = await res.json();
-
-    document.getElementById("nip").textContent = data.nip || "-";
-    document.getElementById("nama").textContent = data.nama || "-";
-    document.getElementById("jabatan").textContent = data.jabatan || "-";
-    document.getElementById("satker").textContent = data.satker || "-";
-    document.getElementById("kinerja").textContent = data.kinerja || "-";
-  } catch (err) {
-    console.error("Gagal ambil profil:", err);
+  if (!nip) {
+    alert("Sesi login telah berakhir. Silakan login kembali.");
+    window.location.href = "login-pegawai.html";
+    return;
   }
-}
 
-// === Ambil Data Saran ===
-async function ambilSaran() {
+  const profilUrl = `http://localhost:8000/pegawai/profile/${nip}`;
+  const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
+
+  let semuaSaran = [];
+  let saranDipilih = null;
+
+  // === Ambil Profil Pegawai ===
   try {
-    const res = await fetch(saranUrl);
-    if (!res.ok) throw new Error("Gagal ambil saran");
-    const data = await res.json();
+    const resProfil = await fetch(profilUrl);
+    if (!resProfil.ok) throw new Error("Gagal mengambil profil");
+    const profil = await resProfil.json();
 
-    semuaSaran = data.riwayat_saran || [];
+    document.getElementById("nip").textContent = profil.nip || "-";
+    document.getElementById("nama").textContent = profil.nama || "-";
+    document.getElementById("jabatan").textContent = profil.jabatan || "-";
+    document.getElementById("satker").textContent = profil.satker || "-";
+    document.getElementById("kinerja").textContent = profil.kinerja || "-";
+  } catch (err) {
+    console.error("❌ Gagal memuat profil:", err);
+  }
+
+  // === Ambil Data Saran ===
+  try {
+    const resSaran = await fetch(saranUrl);
+    if (!resSaran.ok) throw new Error("Gagal mengambil data saran");
+    const dataSaran = await resSaran.json();
+
+    semuaSaran = dataSaran.riwayat_saran || [];
     const tbody = document.querySelector("#tabelSaran tbody");
     tbody.innerHTML = "";
 
@@ -41,7 +48,7 @@ async function ambilSaran() {
       return;
     }
 
-    // === Urutkan sesuai urutan kompetensi yang diinginkan ===
+    // Urutkan kompetensi agar rapi
     const urutanKompetensi = [
       "Integritas",
       "Kerjasama",
@@ -60,20 +67,23 @@ async function ambilSaran() {
       return indexA - indexB;
     });
 
-    // === Render tabel ===
+    // Render tabel saran
     semuaSaran.forEach((item, index) => {
+      const saranId = item.id || item.saran_id;
       const tr = document.createElement("tr");
+
       tr.innerHTML = `
         <td>${index + 1}</td>
         <td>${item.kompetensi}</td>
         <td>${item.aspek_kompetensi}</td>
         <td>${item.saran_pengembangan}</td>
-        <td><button class="btn-pilih" data-id="${item.saran_id}">Pilih</button></td>
+        <td><button class="btn-pilih" data-id="${saranId}">Pilih</button></td>
       `;
+
       tbody.appendChild(tr);
     });
 
-    // === Event listener tombol pilih ===
+    // Tambahkan event listener untuk tombol pilih
     document.querySelectorAll(".btn-pilih").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const saranId = parseInt(e.target.dataset.id);
@@ -81,59 +91,60 @@ async function ambilSaran() {
       });
     });
   } catch (err) {
-    console.error("Gagal ambil saran:", err);
-  }
-}
-
-// === Modal ===
-function bukaModal(saranId) {
-  saranDipilih = semuaSaran.find((s) => s.saran_id === saranId); // ✅ cari berdasarkan saran_id
-
-  if (!saranDipilih) {
-    alert("Saran tidak ditemukan!");
-    console.error("Saran ID tidak ditemukan:", saranId);
-    return;
+    console.error("❌ Gagal memuat saran:", err);
   }
 
-  document.getElementById("modalText").textContent =
-    `"${saranDipilih.saran_pengembangan}" (${saranDipilih.aspek_kompetensi})`;
-  document.getElementById("modalSaran").style.display = "flex";
-}
+  // === Fungsi Modal ===
+  function bukaModal(saranId) {
+    saranDipilih = semuaSaran.find(
+      (s) => s.id === saranId || s.saran_id === saranId
+    );
 
-function tutupModal() {
-  document.getElementById("modalSaran").style.display = "none";
-  saranDipilih = null;
-}
+    if (!saranDipilih) {
+      alert("Saran tidak ditemukan!");
+      console.error("Saran ID tidak ditemukan:", saranId);
+      return;
+    }
 
-// === Simpan Pilihan (PUT /pegawai/saran/select/{saran_id}) ===
-document.getElementById("btnSimpan").addEventListener("click", async () => {
-  if (!saranDipilih || !saranDipilih.saran_id) {
-    alert("Saran belum dipilih dengan benar!");
-    return;
+    document.getElementById("modalText").textContent = `"${saranDipilih.saran_pengembangan}" (${saranDipilih.aspek_kompetensi})`;
+    document.getElementById("modalSaran").style.display = "flex";
   }
 
-  try {
-    const url = `http://localhost:8000/pegawai/saran/select/${saranDipilih.saran_id}`;
-    const res = await fetch(url, { method: "PUT" });
-
-    if (!res.ok) throw new Error("Gagal menyimpan saran");
-    const hasil = await res.json();
-
-    alert(`✅ ${hasil.message}`);
-    tutupModal();
-    window.location.href = "riwayat-saran.html";
-  } catch (err) {
-    console.error("Gagal simpan saran:", err);
-    alert("Terjadi kesalahan saat menyimpan saran.");
+  function tutupModal() {
+    document.getElementById("modalSaran").style.display = "none";
+    saranDipilih = null;
   }
+
+  // === Simpan Pilihan Saran ===
+  document.getElementById("btnSimpan").addEventListener("click", async () => {
+    if (!saranDipilih || (!saranDipilih.id && !saranDipilih.saran_id)) {
+      alert("Saran belum dipilih dengan benar!");
+      return;
+    }
+
+    try {
+      const saranId = saranDipilih.id || saranDipilih.saran_id;
+      const url = `http://localhost:8000/pegawai/saran/select/${saranId}`;
+
+      const res = await fetch(url, { method: "PUT" });
+      if (!res.ok) throw new Error("Gagal menyimpan saran");
+
+      const hasil = await res.json();
+      alert(`✅ ${hasil.message}`);
+      tutupModal();
+      window.location.href = "riwayat-saran.html";
+    } catch (err) {
+      console.error("❌ Gagal menyimpan saran:", err);
+      alert("Terjadi kesalahan saat menyimpan saran.");
+    }
+  });
+
+  // === Tombol Tutup Modal ===
+  document.getElementById("btnTutup").addEventListener("click", tutupModal);
+
+  // === Logout ===
+  document.getElementById("btnLogout").addEventListener("click", () => {
+    sessionStorage.clear();
+    window.location.href = "login-pegawai.html";
+  });
 });
-
-// === Logout ===
-function logout() {
-  localStorage.clear();
-  window.location.href = "login-pegawai.html";
-}
-
-// === Inisialisasi ===
-ambilProfil();
-ambilSaran();

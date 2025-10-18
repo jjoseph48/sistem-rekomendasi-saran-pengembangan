@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login Admin</title>
+  <link rel="stylesheet" href="./css/c_login-admin.css" />
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <h1>Login Admin</h1>
+      <p class="subtitle">Masuk untuk mengelola data pegawai & saran</p>
+
+      <form id="adminLoginForm">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Masukkan username" required />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Masukkan password" required />
+
+        <button type="submit" id="loginBtn">Masuk</button>
+      </form>
+
+      <div id="errorMessage" class="error-message"></div>
+    </div>
+  </div>
+
+  <script src="./js/login-admin.js"></script>
+</body>
+</html>

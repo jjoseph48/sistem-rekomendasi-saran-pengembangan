@@ -1,43 +1,70 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const nip = "121212"; // nanti bisa diganti dari sessionStorage atau input login
-  console.log("NIP yang dikirim:", nip);
+  // === Ambil data login dari sessionStorage ===
+  const nip = sessionStorage.getItem("nip");
+  const nama = sessionStorage.getItem("nama");
 
+  // 🔹 Validasi sesi login
+  if (!nip) {
+    alert("Sesi login Anda telah berakhir. Silakan login kembali.");
+    window.location.href = "login-pegawai.html";
+    return;
+  }
+
+  console.log("🔹 NIP Pegawai:", nip);
+
+  // === Tombol Logout ===
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) logoutBtn.addEventListener("click", logout);
+
+  // === Tampilkan nama pegawai di dashboard (opsional) ===
+  const namaElement = document.getElementById("namaPegawai");
+  if (namaElement && nama) namaElement.textContent = nama;
+
+  // === Ambil data saran pengembangan dari API ===
   try {
     const response = await fetch(`http://localhost:8000/pegawai/saran/${nip}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });
 
-    if (!response.ok) {
-      throw new Error(`Gagal fetch data saran (${response.status})`);
-    }
+    if (!response.ok) throw new Error(`Gagal memuat data (${response.status})`);
 
     const data = await response.json();
-    console.log("Data saran:", data);
+    console.log("✅ Data saran:", data);
 
     const container = document.getElementById("saranContainer");
     if (!container) {
-      console.error("Elemen #saranContainer tidak ditemukan di HTML!");
+      console.error("❌ Elemen #saranContainer tidak ditemukan!");
       return;
     }
 
     container.innerHTML = "";
 
-    // ✅ Pastikan array ada dan punya isi
-    if (!data.riwayat_saran || data.riwayat_saran.length === 0) {
+    const daftarSaran = data.riwayat_saran || [];
+
+    // 🔹 Jika tidak ada saran
+    if (daftarSaran.length === 0) {
       container.innerHTML = "<p>Tidak ada saran pengembangan ditemukan.</p>";
       return;
     }
 
-    // 🔹 Ambil hanya 3 saran pertama
-    const saranTigaPertama = data.riwayat_saran.slice(0, 3);
+    // === Ambil 3 saran terbaru berdasarkan tanggal_rekomendasi ===
+    const tigaSaranTerbaru = daftarSaran
+      .sort(
+        (a, b) =>
+          new Date(b.tanggal_rekomendasi) - new Date(a.tanggal_rekomendasi)
+      )
+      .slice(0, 3);
 
-    saranTigaPertama.forEach((saran) => {
+    // === Render setiap kartu saran ===
+    tigaSaranTerbaru.forEach((saran) => {
       const card = document.createElement("div");
       card.classList.add("saran-card");
 
-      // tanggal direformat biar rapi
-      const tanggal = new Date(saran.tanggal_rekomendasi).toLocaleDateString("id-ID");
+      const tanggal = new Date(saran.tanggal_rekomendasi).toLocaleDateString(
+        "id-ID",
+        { day: "2-digit", month: "long", year: "numeric" }
+      );
 
       card.innerHTML = `
         <h3>${saran.kompetensi}</h3>
@@ -48,11 +75,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       container.appendChild(card);
     });
-  } catch (error) {
-    console.error("Terjadi kesalahan saat mengambil data saran:", error);
+  } catch (err) {
+    console.error("❌ Terjadi kesalahan saat mengambil data:", err);
     const container = document.getElementById("saranContainer");
     if (container) {
-      container.innerHTML = `<p style="color:red;">Terjadi kesalahan saat memuat data saran.</p>`;
+      container.innerHTML =
+        "<p style='color:red;'>Terjadi kesalahan saat memuat data saran.</p>";
     }
   }
 });
+
+// === Fungsi Logout ===
+function logout() {
+  sessionStorage.clear();
+  localStorage.clear();
+  window.location.href = "login-pegawai.html";
+}

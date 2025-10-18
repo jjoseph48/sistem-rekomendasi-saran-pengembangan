@@ -81,6 +81,7 @@ def update_saran_by_id(saran_id: int, data: schemas.EditSaran, db: Session = Dep
             "aspek_kompetensi": saran.aspek_kompetensi,
             "saran_pengembangan": saran.saran_pengembangan,
             "feedback_terakhir": saran.feedback_terakhir,
+            "is_selected": saran.is_selected
         }
     }
 

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Admin</title>
+  <link rel="stylesheet" href="./css/c_dashboard-admin.css" />
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="dashboard-header">
+    <h1>Dashboard Admin</h1>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </header>
+
+  <!-- MAIN -->
+  <main class="dashboard-main">
+    <!-- Tabs Navigation -->
+    <div class="tabs">
+      <button class="tab active" id="tabPegawai">Data Pegawai</button>
+      <button class="tab" id="tabSaran">Data Saran</button>
+    </div>
+
+    <!-- TAB CONTENTS -->
+    <section id="tabContents">
+      <!-- DATA PEGAWAI -->
+      <div class="tab-content active" id="pegawaiContent">
+        <div class="search-box">
+          <input type="text" id="searchPegawai" placeholder="Cari nama pegawai..." />
+        </div>
+        <table id="pegawaiTable">
+          <thead>
+            <tr>
+              <th>Nama</th>
+              <th>NIP</th>
+              <th>Satker</th>
+              <th>Jabatan</th>
+              <th>Kinerja</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <!-- DATA SARAN -->
+      <div class="tab-content" id="saranContent" style="display: none;">
+        <div class="search-box">
+          <input type="text" id="searchSaran" placeholder="Cari nama pegawai..." />
+        </div>
+        <table id="saranTable">
+          <thead>
+            <tr>
+              <th>Nama Pegawai</th>
+              <th>Kompetensi</th>
+              <th>Aspek Kompetensi</th>
+              <th>Saran Pengembangan</th>
+              <th>Feedback Terakhir</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL EDIT -->
+  <div class="modal" id="editModal" style="display: none;">
+    <div class="modal-content">
+      <h2>Edit Feedback</h2>
+      <p id="modalNama"></p>
+
+      <label for="feedbackSelect">Pilih Feedback Terbaru</label>
+      <select id="feedbackSelect">
+        <option value="Tidak Ada">Tidak Ada</option>
+        <option value="Sangat Efektif">Sangat Efektif</option>
+        <option value="Efektif">Efektif</option>
+        <option value="Cukup Efektif">Cukup Efektif</option>
+        <option value="Kurang Efektif">Kurang Efektif</option>
+        <option value="Tidak Efektif">Tidak Efektif</option>
+      </select>
+
+      <label for="saranEdit">Ubah Saran</label>
+      <textarea id="saranEdit" rows="4"></textarea>
+
+      <div class="modal-actions">
+        <button id="saveEditBtn">Simpan</button>
+        <button id="cancelEditBtn">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/dashboard-admin.js"></script>
+</body>
+</html>

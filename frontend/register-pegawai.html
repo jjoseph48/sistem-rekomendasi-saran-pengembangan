@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register Pegawai</title>
+  <link rel="stylesheet" href="./css/c_register-pegawai.css" />
+</head>
+<body>
+  <div class="register-container">
+    <header class="register-header">
+      <button id="btnKembali" class="btn-secondary" style="display:none;">Kembali</button>
+      <h1>Register Pegawai</h1>
+      <button id="btnBatal" class="btn-secondary">Batalkan</button>
+    </header>
+
+    <!-- STEP 1: DATA DIRI -->
+    <section id="step1" class="form-step active">
+      <div class="form-group">
+        <label>Nama</label>
+        <input type="text" id="nama" placeholder="Tuliskan nama pegawai" required />
+      </div>
+
+      <div class="form-group">
+        <label>NIP</label>
+        <input type="text" id="nip" placeholder="Tuliskan NIP pegawai" required />
+      </div>
+
+      <div class="form-group">
+        <label>Satuan Kerja</label>
+        <input type="text" id="satker" placeholder="Tuliskan satuan kerja" />
+      </div>
+
+      <div class="form-group">
+        <label>Jabatan</label>
+        <input type="text" id="jabatan" placeholder="Tuliskan jabatan pegawai" />
+      </div>
+
+      <div class="form-group">
+        <label>Kinerja</label>
+        <input type="text" id="kinerja" placeholder="Tuliskan kinerja pegawai" />
+      </div>
+
+      <div class="btn-group">
+        <button id="btnLanjut1" class="btn-primary">Lanjutkan</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: INPUT KOMPETENSI -->
+    <section id="step2" class="form-step">
+      <p class="desc">
+        Masukkan nilai assessment sesuai kompetensi yang ditampilkan.  
+        (Standar level: 1–5, Capaian nilai: 0–6, Gap kompetensi bisa negatif)
+      </p>
+
+      <div id="kompetensiContainer" class="kompetensi-grid"></div>
+
+      <div class="btn-group">
+        <button id="btnSubmit" class="btn-primary">Lanjutkan</button>
+        <p id="messageBox" style="margin-top: 12px; font-weight: 500;"></p>
+      </div>
+    </section>
+  </div>
+
+  <script src="./js/register-pegawai.js"></script>
+</body>
+</html>
