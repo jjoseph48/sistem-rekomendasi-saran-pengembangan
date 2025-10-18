@@ -53,12 +53,12 @@ def lihat_pegawai(db: Session = Depends(get_db)):
 
 
 # =====================================================
-# 🧩 Saran Pengembangan View (Relasi feedback_id → Feedback)
+# 🧩 Saran Pengembangan View
 # =====================================================
 @router.get("/saran")
 def lihat_saran(db: Session = Depends(get_db)):
     """
-    Menampilkan semua saran pengembangan + nama pegawai + feedback terkait (via FK).
+    Menampilkan semua saran pengembangan + nama pegawai + feedback terkait.
     """
     saran_list = db.query(models.SaranPengembangan).all()
     hasil = []
@@ -67,7 +67,6 @@ def lihat_saran(db: Session = Depends(get_db)):
         pegawai = db.query(models.Pegawai).filter(models.Pegawai.id == s.pegawai_id).first()
         feedback_text = None
 
-        # Ambil feedback dari relasi langsung
         if s.feedback_id:
             feedback_obj = db.query(models.Feedback).filter(models.Feedback.id == s.feedback_id).first()
             if feedback_obj:
@@ -81,7 +80,7 @@ def lihat_saran(db: Session = Depends(get_db)):
             "aspek_kompetensi": s.aspek_kompetensi,
             "saran_pengembangan": s.saran_pengembangan,
             "tanggal_rekomendasi": s.tanggal_rekomendasi,
-            "feedback": feedback_text or "Tidak ada feedback",
+            "feedback": feedback_text or "Belum ada feedback",
             "feedback_id": s.feedback_id,
             "is_selected": s.is_selected
         })
@@ -96,7 +95,6 @@ def lihat_saran(db: Session = Depends(get_db)):
 def update_saran_by_id(saran_id: int, data: schemas.EditSaran, db: Session = Depends(get_db)):
     """
     Admin mengedit teks saran pengembangan berdasarkan ID saran.
-    Feedback tidak diubah dari sini.
     """
     saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.id == saran_id).first()
     if not saran:
@@ -123,6 +121,49 @@ def update_saran_by_id(saran_id: int, data: schemas.EditSaran, db: Session = Dep
 
 
 # =====================================================
+# 🧠 Update Feedback (ganti feedback_id pada Saran)
+# =====================================================
+@router.put("/saran/feedback/{saran_id}")
+def update_feedback_for_saran(saran_id: int, data: dict, db: Session = Depends(get_db)):
+    """
+    Admin mengubah feedback_id pada tabel SaranPengembangan berdasarkan ID saran.
+    Contoh request:
+    {
+        "feedback_id": 5
+    }
+    """
+    saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.id == saran_id).first()
+    if not saran:
+        raise HTTPException(status_code=404, detail="Saran pengembangan tidak ditemukan")
+
+    feedback_id = data.get("feedback_id")
+    if not feedback_id:
+        raise HTTPException(status_code=400, detail="Field 'feedback_id' wajib diisi")
+
+    # Validasi apakah feedback_id ada di tabel Feedback
+    feedback = db.query(models.Feedback).filter(models.Feedback.id == feedback_id).first()
+    if not feedback:
+        raise HTTPException(status_code=404, detail=f"Feedback dengan ID {feedback_id} tidak ditemukan")
+
+    saran.feedback_id = feedback_id
+    db.commit()
+    db.refresh(saran)
+
+    pegawai = db.query(models.Pegawai).filter(models.Pegawai.id == saran.pegawai_id).first()
+
+    return {
+        "message": "✅ Feedback berhasil diperbarui untuk saran ini",
+        "data": {
+            "id_saran": saran.id,
+            "nama_pegawai": pegawai.nama if pegawai else "-",
+            "nip": pegawai.nip if pegawai else "-",
+            "feedback_baru": feedback.feedback,
+            "feedback_id": saran.feedback_id
+        }
+    }
+
+
+# =====================================================
 # 🗑️ Hapus Saran
 # =====================================================
 @router.delete("/saran/{id}")
@@ -134,42 +175,3 @@ def hapus_saran(id: int, db: Session = Depends(get_db)):
     db.delete(saran)
     db.commit()
     return {"message": f"Saran dengan ID {id} berhasil dihapus"}
-
-
-# =====================================================
-# 🔄 Update Feedback oleh Admin
-# =====================================================
-@router.put("/feedback/{feedback_id}")
-def update_feedback_by_id(feedback_id: int, data: dict, db: Session = Depends(get_db)):
-    """
-    Admin mengedit feedback berdasarkan ID feedback.
-    Data dikirim dalam bentuk:
-    {
-        "feedback": "Teks feedback baru"
-    }
-    """
-    feedback = db.query(models.Feedback).filter(models.Feedback.id == feedback_id).first()
-    if not feedback:
-        raise HTTPException(status_code=404, detail="Feedback tidak ditemukan")
-
-    if "feedback" not in data or not data["feedback"]:
-        raise HTTPException(status_code=400, detail="Field 'feedback' wajib diisi")
-
-    feedback.feedback = data["feedback"]
-    db.commit()
-    db.refresh(feedback)
-
-    # Ambil informasi pegawai dan saran terkait
-    saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.feedback_id == feedback.id).first()
-    pegawai = db.query(models.Pegawai).filter(models.Pegawai.id == saran.pegawai_id).first() if saran else None
-
-    return {
-        "message": "✅ Feedback berhasil diperbarui",
-        "data": {
-            "id_feedback": feedback.id,
-            "nama_pegawai": pegawai.nama if pegawai else "-",
-            "nip": pegawai.nip if pegawai else "-",
-            "saran_pengembangan": saran.saran_pengembangan if saran else "-",
-            "feedback_baru": feedback.feedback
-        }
-    }

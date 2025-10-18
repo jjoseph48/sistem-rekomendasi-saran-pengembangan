@@ -19,7 +19,6 @@
     <div class="tabs">
       <button class="tab active" id="tabPegawai">Data Pegawai</button>
       <button class="tab" id="tabSaran">Saran Pengembangan</button>
-      <button class="tab" id="tabFeedback">Feedback Terakhir</button>
     </div>
 
     <!-- TAB CONTENTS -->
@@ -61,27 +60,8 @@
               <th>Kompetensi</th>
               <th>Aspek Kompetensi</th>
               <th>Saran Pengembangan</th>
-              <th>Feedback Terakhir</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <!-- DATA FEEDBACK -->
-      <div class="tab-content" id="feedbackContent" style="display: none;">
-        <div class="search-box">
-          <input type="text" id="searchFeedback" placeholder="Cari nama pegawai..." />
-        </div>
-        <table id="feedbackTable">
-          <thead>
-            <tr>
-              <th>Nama Pegawai</th>
-              <th>Kompetensi</th>
-              <th>Aspek Kompetensi</th>
               <th>Feedback</th>
-              <th>Tanggal</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -93,20 +73,19 @@
   <!-- MODAL EDIT -->
   <div class="modal" id="editModal" style="display: none;">
     <div class="modal-content">
-      <h2>Edit Feedback</h2>
+      <h2>Edit Saran & Feedback</h2>
       <p id="modalNama"></p>
 
-      <label for="feedbackSelect">Pilih Feedback Terbaru</label>
+      <label for="feedbackSelect">Pilih Kategori Feedback</label>
       <select id="feedbackSelect">
-        <option value="Tidak Ada">Tidak Ada</option>
-        <option value="Sangat Efektif">Sangat Efektif</option>
-        <option value="Efektif">Efektif</option>
-        <option value="Cukup Efektif">Cukup Efektif</option>
-        <option value="Kurang Efektif">Kurang Efektif</option>
-        <option value="Tidak Efektif">Tidak Efektif</option>
+        <option value="1">Tidak Efektif</option>
+        <option value="2">Kurang Efektif</option>
+        <option value="3">Cukup Efektif</option>
+        <option value="4">Efektif</option>
+        <option value="5">Sangat Efektif</option>
       </select>
 
-      <label for="saranEdit">Ubah Saran</label>
+      <label for="saranEdit">Ubah Saran Pengembangan</label>
       <textarea id="saranEdit" rows="4"></textarea>
 
       <div class="modal-actions">
