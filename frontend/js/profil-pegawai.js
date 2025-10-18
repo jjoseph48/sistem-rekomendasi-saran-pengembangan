@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  // === Ambil NIP dari sessionStorage atau query parameter ===
   const nip =
     new URLSearchParams(window.location.search).get("nip") ||
     sessionStorage.getItem("nip");
@@ -14,11 +13,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const profilUrl = `http://localhost:8000/pegawai/profile/${nip}`;
   const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
+  const feedbackUrl = `http://localhost:8000/feedback`; // <== endpoint feedback
 
   let semuaSaran = [];
+  let semuaFeedback = {};
   let saranDipilih = null;
 
-  // === Ambil Profil Pegawai ===
+  // === Ambil Feedback (untuk translate feedback_id) ===
+  try {
+    const resFeedback = await fetch(feedbackUrl);
+    if (!resFeedback.ok) throw new Error("Gagal mengambil data feedback");
+
+    const dataFeedback = await resFeedback.json();
+
+    // asumsikan dataFeedback = [{ id: 1, feedback: "Perlu pendampingan mentor" }, ...]
+    dataFeedback.forEach((fb) => {
+      semuaFeedback[fb.id] = fb.feedback;
+    });
+
+    console.log("✅ Data feedback berhasil dimuat:", semuaFeedback);
+  } catch (err) {
+    console.error("❌ Gagal memuat feedback:", err);
+  }
+
+  // === Ambil Profil ===
   try {
     const resProfil = await fetch(profilUrl);
     if (!resProfil.ok) throw new Error("Gagal mengambil profil pegawai");
@@ -33,24 +51,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("❌ Gagal memuat profil:", err);
   }
 
-  // === Ambil Data Saran Pengembangan ===
+  // === Ambil Saran Pengembangan ===
   try {
     const resSaran = await fetch(saranUrl);
     if (!resSaran.ok) throw new Error("Gagal mengambil data saran");
 
     const dataSaran = await resSaran.json();
-    // 🔹 Pastikan response adalah array
-    semuaSaran = Array.isArray(dataSaran) ? dataSaran : dataSaran.riwayat_saran || [];
+    semuaSaran = dataSaran.riwayat_saran || [];
 
     const tbody = document.querySelector("#tabelSaran tbody");
     tbody.innerHTML = "";
 
     if (semuaSaran.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='6'>Belum ada saran pengembangan.</td></tr>";
+      tbody.innerHTML =
+        "<tr><td colspan='5'>Belum ada saran pengembangan.</td></tr>";
       return;
     }
 
-    // Urutkan kompetensi agar rapi
+    // Urutkan berdasarkan kompetensi
     const urutanKompetensi = [
       "Integritas",
       "Kerjasama",
@@ -69,10 +87,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       return indexA - indexB;
     });
 
-    // === Render tabel saran ===
-    semuaSaran.forEach((item, index) => {
-      const saranId = item.id || item.saran_id;
-      const feedbackText = item.feedback_id ? `#${item.feedback_id}` : "Tidak Ada Feedback";
+    // Render tabel
+    semuaSaran.forEach((item) => {
+      const saranId = item.saran_id || item.id;
+
+      // translate feedback_id ke teks feedback
+      const feedbackText =
+        semuaFeedback[item.feedback_id] ||
+        item.feedback ||
+        "Tidak Ada Feedback";
 
       const tr = document.createElement("tr");
       tr.innerHTML = `
@@ -91,7 +114,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       tbody.appendChild(tr);
     });
 
-    // === Event tombol pilih ===
+    // Event listener tombol pilih
     document.querySelectorAll(".btn-pilih").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const saranId = parseInt(e.target.dataset.id);
@@ -102,15 +125,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("❌ Gagal memuat data saran:", err);
   }
 
-  // === Modal Pilihan ===
+  // === Modal ===
   function bukaModal(saranId) {
     saranDipilih = semuaSaran.find(
       (s) => s.id === saranId || s.saran_id === saranId
     );
-
     if (!saranDipilih) {
       alert("Saran tidak ditemukan!");
-      console.error("Saran ID tidak ditemukan:", saranId);
       return;
     }
 
@@ -123,26 +144,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     saranDipilih = null;
   }
 
-  // === Simpan Pilihan Saran ===
+  // === Simpan Pilihan ===
   document.getElementById("btnSimpan").addEventListener("click", async () => {
-    if (!saranDipilih || (!saranDipilih.id && !saranDipilih.saran_id)) {
-      alert("Saran belum dipilih dengan benar!");
-      return;
-    }
+    if (!saranDipilih) return alert("Belum memilih saran!");
+
+    const saranId = saranDipilih.id || saranDipilih.saran_id;
+    const url = `http://localhost:8000/pegawai/saran/select/${saranId}`;
 
     try {
-      const saranId = saranDipilih.id || saranDipilih.saran_id;
-      const url = `http://localhost:8000/pegawai/saran/select/${saranId}`;
-
       const res = await fetch(url, { method: "PUT" });
       if (!res.ok) throw new Error("Gagal menyimpan saran");
 
       const hasil = await res.json();
       alert(`✅ ${hasil.message}`);
       tutupModal();
-
-      // Refresh halaman setelah pilih
-      window.location.href = "riwayat-saran.html";
+      location.reload();
     } catch (err) {
       console.error("❌ Gagal menyimpan saran:", err);
       alert("Terjadi kesalahan saat menyimpan saran.");

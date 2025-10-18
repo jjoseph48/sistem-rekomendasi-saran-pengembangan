@@ -17,7 +17,8 @@
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #f2f2f2; }
     button { padding: 6px 10px; cursor: pointer; }
-    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+             background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
     .modal-content { background: white; padding: 20px; border-radius: 8px; width: 350px; }
     select { width: 100%; padding: 6px; margin: 10px 0; }
     .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
@@ -38,7 +39,6 @@
 
   <main>
     <h1>Riwayat Saran Pengembangan</h1>
-
     <table id="tabelRiwayat">
       <thead>
         <tr>
@@ -50,35 +50,25 @@
           <th>Aksi</th>
         </tr>
       </thead>
-      <tbody>
-        <tr><td colspan="6">Memuat data...</td></tr>
-      </tbody>
+      <tbody><tr><td colspan="6">Memuat data...</td></tr></tbody>
     </table>
   </main>
 
-  <!-- Modal Feedback -->
   <!-- === Modal Feedback === -->
-<div id="modalFeedback" class="modal" style="display: none;">
-  <div class="modal-content">
-    <h3 id="modalJudul">Berikan Feedback</h3>
-    <p id="modalSaranTeks"></p>
+  <div id="modalFeedback" class="modal">
+    <div class="modal-content">
+      <h3 id="modalJudul">Berikan Feedback</h3>
+      <p id="modalSaranTeks"></p>
 
-    <label for="inputFeedback">Pilih Feedback:</label>
-    <select id="inputFeedback">
-      <option value="">-- Pilih --</option>
-      <option value="Sangat Efektif">Sangat Efektif</option>
-      <option value="Efektif">Efektif</option>
-      <option value="Cukup Efektif">Cukup Efektif</option>
-      <option value="Kurang Efektif">Kurang Efektif</option>
-      <option value="Tidak Efektif">Tidak Efektif</option>
-    </select>
+      <label for="inputFeedback">Pilih Feedback:</label>
+      <select id="inputFeedback"><option value="">Memuat opsi...</option></select>
 
-    <div class="modal-actions">
-      <button id="btnKirimFeedback">Simpan</button>
-      <button id="btnBatalFeedback" onclick="tutupModalFeedback()">Batal</button>
+      <div class="modal-actions">
+        <button id="btnKirimFeedback">Simpan</button>
+        <button id="btnBatalFeedback" onclick="tutupModalFeedback()">Batal</button>
+      </div>
     </div>
   </div>
-</div>
 
   <script src="./js/riwayat-saran.js"></script>
 </body>

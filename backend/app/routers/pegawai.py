@@ -106,6 +106,39 @@ def pilih_saran(saran_id: int, db: Session = Depends(get_db)):
     }
 
 # =========================================================
+# 💬 UPDATE FEEDBACK PADA SARAN TERTENTU
+# =========================================================
+@router.put("/saran/feedback/{saran_id}")
+def update_feedback(saran_id: int, feedback_id: int, db: Session = Depends(get_db)):
+    """
+    Pegawai dapat mengubah feedback terhadap saran yang dipilih.
+    feedback_id dikirim via query parameter (contoh: ?feedback_id=3)
+    """
+
+    # Cari saran berdasarkan ID
+    saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.id == saran_id).first()
+    if not saran:
+        raise HTTPException(status_code=404, detail="Saran tidak ditemukan")
+
+    # Pastikan feedback_id valid
+    feedback_obj = db.query(models.Feedback).filter(models.Feedback.id == feedback_id).first()
+    if not feedback_obj:
+        raise HTTPException(status_code=404, detail="Feedback tidak ditemukan")
+
+    # Update kolom feedback_id
+    saran.feedback_id = feedback_id
+    db.commit()
+    db.refresh(saran)
+
+    return {
+        "message": f"Feedback berhasil diubah menjadi '{feedback_obj.feedback}'",
+        "saran_id": saran.id,
+        "kompetensi": saran.kompetensi,
+        "feedback_id": saran.feedback_id,
+        "feedback": feedback_obj.feedback
+    }
+
+# =========================================================
 # 🚪 LOGOUT SEDERHANA
 # =========================================================
 @router.post("/logout")

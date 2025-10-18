@@ -1,42 +1,64 @@
-// === Ambil NIP dari URL atau session ===
 const nip =
   new URLSearchParams(window.location.search).get("nip") ||
   sessionStorage.getItem("nip");
 
-const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
-const feedbackUrl = `http://localhost:8000/pegawai/feedback`;
+const apiBase = "http://localhost:8000";
+const saranUrl = `${apiBase}/pegawai/saran/${nip}`;
+const feedbackKategoriUrl = `${apiBase}/feedback/`; // GET semua kategori feedback
+const kirimFeedbackBaseUrl = `${apiBase}/pegawai/saran/feedback`; // PUT /{saran_id}?feedback_id=x
 
 let daftarSaran = [];
+let daftarKategori = [];
 let saranAktif = null;
 
-// === Ambil Data Riwayat (Saran + Feedback) ===
+// === Ambil semua data awal ===
+document.addEventListener("DOMContentLoaded", async () => {
+  await ambilKategoriFeedback();
+  await ambilRiwayat();
+});
+
+// === Ambil daftar kategori feedback dari API ===
+async function ambilKategoriFeedback() {
+  try {
+    const res = await fetch(feedbackKategoriUrl);
+    if (!res.ok) throw new Error("Gagal mengambil kategori feedback");
+
+    const data = await res.json();
+    daftarKategori = data;
+
+    const select = document.getElementById("inputFeedback");
+    select.innerHTML = '<option value="">-- Pilih --</option>';
+    data.forEach((fb) => {
+      const opt = document.createElement("option");
+      opt.value = fb.id; // 🔹 Gunakan ID feedback
+      opt.textContent = fb.feedback;
+      select.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("❌ Gagal load kategori feedback:", err);
+    alert("Tidak dapat memuat daftar feedback.");
+  }
+}
+
+// === Ambil saran yang dipilih pegawai ===
 async function ambilRiwayat() {
   try {
-    if (!nip) throw new Error("NIP tidak ditemukan di sesi.");
-
     const res = await fetch(saranUrl);
     if (!res.ok) throw new Error("Gagal mengambil data saran.");
 
     const data = await res.json();
-    daftarSaran = Array.isArray(data)
-      ? data.filter((s) => s.is_selected)
-      : (data.riwayat_saran || []).filter((s) => s.is_selected);
-
+    daftarSaran = (data.riwayat_saran || []).filter((s) => s.is_selected);
     renderTabel();
   } catch (err) {
     console.error("❌ Gagal memuat data:", err);
     const tbody = document.querySelector("#tabelRiwayat tbody");
-    if (tbody) {
-      tbody.innerHTML = `<tr><td colspan="6">Terjadi kesalahan: ${err.message}</td></tr>`;
-    }
+    tbody.innerHTML = `<tr><td colspan="6">Terjadi kesalahan: ${err.message}</td></tr>`;
   }
 }
 
-// === Render Data ke Tabel ===
+// === Render tabel saran + feedback ===
 function renderTabel() {
   const tbody = document.querySelector("#tabelRiwayat tbody");
-  if (!tbody) return;
-
   tbody.innerHTML = "";
 
   if (daftarSaran.length === 0) {
@@ -51,13 +73,10 @@ function renderTabel() {
       <td>${item.kompetensi || "-"}</td>
       <td>${item.aspek_kompetensi || "-"}</td>
       <td>${item.saran_pengembangan || "-"}</td>
+      <td>${item.feedback || "Tidak Ada Feedback"}</td>
       <td>
-        ${item.feedback_terakhir || "Tidak Ada Feedback"}
-        ${item.tanggal_feedback ? `<br><small>${new Date(item.tanggal_feedback).toLocaleString("id-ID")}</small>` : ""}
-      </td>
-      <td>
-        <button class="btn-feedback" data-id="${item.saran_id || item.id}">
-          ${item.feedback_terakhir ? "Edit ✏️" : "Feedback 💬"}
+        <button class="btn-feedback" data-id="${item.saran_id}">
+          ${item.feedback && item.feedback !== "Tidak Ada Feedback" ? "Edit ✏️" : "Feedback 💬"}
         </button>
       </td>
     `;
@@ -72,23 +91,27 @@ function renderTabel() {
   });
 }
 
-// === Modal Feedback ===
+// === Buka modal feedback ===
 function bukaModalFeedback(saranId) {
-  saranAktif = daftarSaran.find((s) => s.saran_id === saranId || s.id === saranId);
+  saranAktif = daftarSaran.find((s) => s.saran_id === saranId);
   if (!saranAktif) {
     alert("Saran tidak ditemukan!");
     return;
   }
 
-  document.getElementById("modalJudul").textContent = saranAktif.feedback_terakhir
-    ? "Edit Feedback"
-    : "Berikan Feedback";
+  document.getElementById("modalJudul").textContent =
+    saranAktif.feedback && saranAktif.feedback !== "Tidak Ada Feedback"
+      ? "Edit Feedback"
+      : "Berikan Feedback";
 
   document.getElementById("modalSaranTeks").textContent =
     `"${saranAktif.saran_pengembangan}" (${saranAktif.aspek_kompetensi})`;
 
   const select = document.getElementById("inputFeedback");
-  select.value = saranAktif.feedback_terakhir || "";
+
+  // Pilih option sesuai feedback yang sudah ada
+  const currentFeedback = daftarKategori.find((f) => f.feedback === saranAktif.feedback);
+  select.value = currentFeedback ? currentFeedback.id : "";
 
   document.getElementById("modalFeedback").style.display = "flex";
 }
@@ -98,45 +121,31 @@ function tutupModalFeedback() {
   saranAktif = null;
 }
 
-// === Kirim / Edit Feedback ===
+// === Kirim feedback (PUT ke /pegawai/saran/feedback/{saran_id}?feedback_id=x) ===
 document.getElementById("btnKirimFeedback").addEventListener("click", async () => {
   const select = document.getElementById("inputFeedback");
-  const teksFeedback = select.value.trim();
+  const feedbackId = select.value;
 
-  if (!saranAktif || !teksFeedback) {
+  if (!saranAktif || !feedbackId) {
     alert("Silakan pilih salah satu opsi feedback!");
     return;
   }
 
-  const payload = {
-    saran_id: saranAktif.saran_id || saranAktif.id,
-    nip,
-    feedback: teksFeedback,
-  };
+  const url = `${kirimFeedbackBaseUrl}/${saranAktif.saran_id}?feedback_id=${feedbackId}`;
 
   try {
-    const res = await fetch(feedbackUrl, {
-      method: "POST", // cukup POST karena API akan handle create/update otomatis
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      const errMsg = await res.text();
-      throw new Error(errMsg || "Gagal menyimpan feedback");
-    }
-
+    const res = await fetch(url, { method: "PUT" });
+    if (!res.ok) throw new Error(await res.text());
     const result = await res.json();
+
     alert(`✅ ${result.message || "Feedback berhasil disimpan!"}`);
     tutupModalFeedback();
-    ambilRiwayat(); // refresh tabel
+    await ambilRiwayat();
   } catch (err) {
     console.error("❌ Gagal kirim feedback:", err);
     alert("Terjadi kesalahan saat menyimpan feedback.");
   }
 });
-
-document.getElementById("btnBatalFeedback").addEventListener("click", tutupModalFeedback);
 
 // === Logout ===
 function logout() {
@@ -144,6 +153,3 @@ function logout() {
   sessionStorage.clear();
   window.location.href = "login-pegawai.html";
 }
-
-// === Jalankan saat halaman dimuat ===
-document.addEventListener("DOMContentLoaded", ambilRiwayat);
