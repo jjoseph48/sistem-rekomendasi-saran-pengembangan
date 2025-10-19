@@ -3,82 +3,95 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard Pegawai</title>
-    <link href="./css/c_dashboard-pegawai.css" rel="stylesheet" />
+    <title>E-Talenta | Dashboard Pegawai</title>
+    <link rel="stylesheet" href="./css/c_dashboard-pegawai.css" />
   </head>
 
   <body>
-    <div class="dashboard-wrapper">
-      <!-- HEADER -->
-      <header class="dashboard-header">
-        <h1>Dashboard Pegawai</h1>
-        <button id="logoutBtn" class="logout-btn">Logout</button>
-      </header>
-
-      <main class="dashboard-main">
-        <!-- SIDEBAR -->
-        <aside class="sidebar">
-          <h3>Menu</h3>
+    <div class="layout">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <h2 class="logo">E-Talenta</h2>
+        <nav class="menu">
           <ul>
-            <li onclick="window.location.href='dashboard-pegawai.html'">🏠 Dashboard</li>
-            <li onclick="window.location.href='profil-pegawai.html'">👤 Profil Pegawai</li>
-            <li onclick="window.location.href='riwayat-saran.html'">🗒️ Riwayat Saran</li>
-            <li>📋 Simpeg</li>
+            <li class="active" onclick="window.location.href='dashboard-pegawai.html'">
+              <span>🏠</span> Dashboard
+            </li>
+            <li onclick="window.location.href='profil-pegawai.html'">
+              <span>😊</span> Profil Pegawai
+            </li>
+            <li onclick="window.location.href='riwayat-saran.html'">
+              <span>🗒️</span> Riwayat Saran
+            </li>
+            <li><span>📋</span> Simpeg</li>
           </ul>
-        </aside>
+        </nav>
+      </aside>
 
-        <!-- ISI UTAMA -->
-        <section class="dashboard-content">
-          <div class="content-grid">
-            <!-- Kotak Talenta -->
-            <div class="kotak-talenta">
-              <h2>KOTAK TALENTA</h2>
-              <div class="kotak-talent-box">
-                <h1>9</h1>
-                <p>Kategori</p>
-                <span>Kinerja di atas ekspektasi dan potensial tinggi</span>
+      <!-- KONTEN UTAMA -->
+      <main class="main-content">
+        <header class="top-bar">
+          <h1>Dashboard</h1>
+          <div class="user-info">
+            <span id="namaPegawai" class="pegawai-nama"></span>
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+          </div>
+        </header>
+
+        <section class="content">
+          <!-- Grid Atas -->
+          <div class="grid-box">
+            <div class="card talenta">
+              <h3>KOTAK TALENTA</h3>
+              <div class="box-value">
+                <div class="value">9</div>
+                <p class="label">Kategori</p>
+                <p class="desc">
+                  Kinerja di atas ekspektasi dan potensial tinggi
+                </p>
               </div>
             </div>
 
-            <!-- Saran Rekomendasi -->
-            <div class="saran-rekomendasi">
-              <h2>SARAN REKOMENDASI</h2>
-              <div id="saranContainer" class="saran-container">
-                <p class="loading-text">Memuat saran pengembangan...</p>
+            <!-- SARAN REKOMENDASI (DINAMIS) -->
+            <div class="card rekomendasi">
+              <h3>SARAN REKOMENDASI</h3>
+              <div id="saranContainer" class="recommend-box">
+                <p>Memuat saran pengembangan...</p>
               </div>
             </div>
           </div>
 
-          <!-- Jabatan Lowong -->
-          <div class="jabatan-lowong">
+          <!-- Tabel Jabatan -->
+          <section class="lowongan">
             <h2>Jabatan Lowong 2025/2026</h2>
             <table>
               <thead>
                 <tr>
-                  <th>Nama Jabatan</th>
-                  <th>Unit Kerja</th>
-                  <th>Status</th>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>NIP</th>
+                  <th>Jabatan</th>
+                  <th>Tahun Lowong</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>Analis Kebijakan</td>
-                  <td>Biro SDM</td>
-                  <td>Terbuka</td>
+                  <td>1</td>
+                  <td>Dummy 2</td>
+                  <td>123456789</td>
+                  <td>Analis SDM Aparatur</td>
+                  <td>2026</td>
                 </tr>
                 <tr>
-                  <td>Perencana Madya</td>
-                  <td>Direktorat Pengembangan</td>
-                  <td>Terbuka</td>
-                </tr>
-                <tr>
-                  <td>Pranata Komputer Ahli</td>
-                  <td>Subdit Teknologi</td>
-                  <td>Terbuka</td>
+                  <td>2</td>
+                  <td>Dummy 3</td>
+                  <td>123456789</td>
+                  <td>Analis SDM Aparatur</td>
+                  <td>2026</td>
                 </tr>
               </tbody>
             </table>
-          </div>
+          </section>
         </section>
       </main>
     </div>
