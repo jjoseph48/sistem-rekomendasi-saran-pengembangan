@@ -1,76 +1,145 @@
-/* CSS for Login Pegawai Page */
+/* ============ GLOBAL ============ */
 body {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-  background-color: #f9f9fb;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #e8f0ff, #dbeafe);
   margin: 0;
   padding: 0;
-  text-align: center; /* Semua teks center */
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #0a1f44;
 }
 
+/* ============ LOGIN CONTAINER ============ */
 .c_login-pegawai-frame1 {
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  max-width: 380px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
+  animation: fadeIn 0.8s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Judul "Login" */
+.c_login-pegawai-frame1::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 100px;
+  height: 100px;
+  background: rgba(0, 120, 215, 0.12);
+  border-radius: 50%;
+}
+
+.c_login-pegawai-frame1::after {
+  content: "";
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 130px;
+  height: 130px;
+  background: rgba(0, 120, 215, 0.08);
+  border-radius: 50%;
+}
+
+/* ============ TITLE & SUBTITLE ============ */
 .c_login-pegawai-text11 {
-  font-size: 28px;
-  font-weight: bold;
-  text-transform: uppercase; /* jadi huruf besar semua */
+  font-size: 1.8rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #0a1f44;
   margin: 0;
 }
 
-/* Subjudul di bawah Login */
 .c_login-pegawai-text13 {
-  font-size: 16px;
-  margin: 5px 0 20px;
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 8px 0 25px;
 }
 
+/* ============ INPUT FIELD ============ */
 .c_login-pegawai-frame4 {
+  width: 100%;
   margin: 20px 0;
 }
 
 .nip-input {
-  width: 240px;
-  padding: 10px;
-  font-size: 14px;
+  width: 100%;
+  max-width: 260px;
+  padding: 12px;
+  font-size: 0.95rem;
   margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
   text-align: center;
+  background-color: #f9fafb;
+  transition: all 0.2s ease;
 }
 
+.nip-input:focus {
+  outline: none;
+  border-color: #0078d7;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(0, 120, 215, 0.15);
+}
+
+/* ============ BUTTONS ============ */
 .login-btn,
 .register-btn {
-  background-color: #0078d7;
+  width: 100%;
+  max-width: 260px;
+  background: linear-gradient(90deg, #0078d7, #1e88e5);
   color: white;
   border: none;
-  padding: 10px 25px;
-  font-size: 15px;
+  padding: 12px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 10px;
   cursor: pointer;
-  border-radius: 6px;
   margin-top: 10px;
+  transition: all 0.3s ease;
 }
 
 .login-btn:hover,
 .register-btn:hover {
-  background-color: #005ea2;
+  background: linear-gradient(90deg, #005ea2, #1565c0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(13, 71, 161, 0.25);
 }
 
+/* ============ SEPARATOR ============ */
 .separator {
   border: 0;
   height: 1px;
-  background: #ccc;
-  width: 60%;
-  margin: 20px auto;
+  background: #e5e7eb;
+  width: 70%;
+  margin: 25px auto;
 }
 
-/* Footer text */
+/* ============ FOOTER TEXT ============ */
 .c_login-pegawai-text23 {
-  font-size: 12px;
-  color: #777; /* abu-abu lembut */
-  margin-top: 30px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-top: 25px;
+}
+
+/* ============ ANIMATION ============ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
