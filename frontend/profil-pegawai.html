@@ -63,17 +63,24 @@
   </style>
 </head>
 <body>
-  <div class="sidebar">
-    <h2>E-Talenta</h2>
-    <ul>
-      <li><a href="dashboard-pegawai.html">Dashboard</a></li>
-      <li><a href="profil-pegawai.html" class="active">Profil Pegawai</a></li>
-      <li><a href="riwayat-saran.html">Riwayat Saran</a></li>
-      <li><a href="https://simpeg.kemenpar.go.id/">Simpeg</a></li>
-    </ul>
-
-    <button id="btnLogout" class="logout-btn">Logout</button>
-  </div>
+  <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <h2 class="logo">E-Talenta</h2>
+        <nav class="menu">
+          <ul>
+            <li onclick="window.location.href='dashboard-pegawai.html'">
+              <span>🏠</span> Dashboard
+            </li>
+            <li class="active" onclick="window.location.href='profil-pegawai.html'">
+              <span>😊</span> Profil Pegawai
+            </li>
+            <li onclick="window.location.href='riwayat-saran.html'">
+              <span>🗒️</span> Riwayat Saran
+            </li>
+            <li><span>📋</span> Simpeg</li>
+          </ul>
+        </nav>
+      </aside>
 
   <main>
     <h1>Profil Pegawai</h1>
