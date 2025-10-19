@@ -120,27 +120,27 @@ def update_saran_by_id(saran_id: int, data: schemas.EditSaran, db: Session = Dep
     }
 
 
+from fastapi import Query
+
 # =====================================================
-# 🧠 Update Feedback (ganti feedback_id pada Saran)
+# 🧠 Update Feedback (via query parameter)
 # =====================================================
 @router.put("/saran/feedback/{saran_id}")
-def update_feedback_for_saran(saran_id: int, data: dict, db: Session = Depends(get_db)):
+def update_feedback_for_saran(
+    saran_id: int,
+    feedback_id: int = Query(..., description="ID feedback yang akan diset"),
+    db: Session = Depends(get_db)
+):
     """
     Admin mengubah feedback_id pada tabel SaranPengembangan berdasarkan ID saran.
     Contoh request:
-    {
-        "feedback_id": 5
-    }
+    PUT /admin/saran/feedback/1?feedback_id=5
     """
     saran = db.query(models.SaranPengembangan).filter(models.SaranPengembangan.id == saran_id).first()
     if not saran:
         raise HTTPException(status_code=404, detail="Saran pengembangan tidak ditemukan")
 
-    feedback_id = data.get("feedback_id")
-    if not feedback_id:
-        raise HTTPException(status_code=400, detail="Field 'feedback_id' wajib diisi")
-
-    # Validasi apakah feedback_id ada di tabel Feedback
+    # Validasi feedback_id
     feedback = db.query(models.Feedback).filter(models.Feedback.id == feedback_id).first()
     if not feedback:
         raise HTTPException(status_code=404, detail=f"Feedback dengan ID {feedback_id} tidak ditemukan")
@@ -152,7 +152,7 @@ def update_feedback_for_saran(saran_id: int, data: dict, db: Session = Depends(g
     pegawai = db.query(models.Pegawai).filter(models.Pegawai.id == saran.pegawai_id).first()
 
     return {
-        "message": "✅ Feedback berhasil diperbarui untuk saran ini",
+        "message": f"✅ Feedback berhasil diubah menjadi '{feedback.feedback}'",
         "data": {
             "id_saran": saran.id,
             "nama_pegawai": pegawai.nama if pegawai else "-",

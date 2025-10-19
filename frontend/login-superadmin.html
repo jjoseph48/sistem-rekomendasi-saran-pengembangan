@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Superadmin - E-Talenta</title>
+    <link rel="stylesheet" href="./css/c_login-superadmin.css" />
+  </head>
+
+  <body>
+    <div class="login-container">
+      <div class="login-box">
+        <h2>Login Superadmin</h2>
+        <p class="subtitle">Masuk untuk mengelola sistem E-Talenta</p>
+
+        <form id="superadminLoginForm">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Masukkan username"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Masukkan password"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn-login">Masuk</button>
+          <p id="errorMessage" class="error-message"></p>
+        </form>
+
+        <div class="back-link">
+          <a href="index.html">← Kembali ke Portal</a>
+        </div>
+      </div>
+    </div>
+
+    <script src="./js/login-superadmin.js"></script>
+  </body>
+</html>

@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS saran_pengembangan (
     kompetensi VARCHAR(255) NOT NULL,
     aspek_kompetensi VARCHAR(100) NOT NULL,
     saran_pengembangan TEXT NOT NULL,
+    is_selected BOOLEAN DEFAULT FALSE,
     feedback_id INTEGER REFERENCES feedback(id) ON DELETE SET NULL,
     tanggal_rekomendasi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -62,6 +63,16 @@ ON CONFLICT (username) DO NOTHING;
 INSERT INTO user_admin (username, password, role)
 VALUES ('admin1', 'admin123', 'admin')
 ON CONFLICT (username) DO NOTHING;
+
+-- 🧩 Insert kategori feedback default
+INSERT INTO feedback (feedback)
+VALUES
+('Sangat Efektif'),
+('Efektif'),
+('Cukup Efektif'),
+('Kurang Efektif'),
+('Tidak Efektif')
+ON CONFLICT DO NOTHING;
 
 -- =====================================
 -- END OF INIT SCRIPT

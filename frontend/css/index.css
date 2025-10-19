@@ -38,7 +38,6 @@ body {
 }
 
 .btn {
-  background-color: #0078d7;
   color: white;
   border: none;
   padding: 12px 40px;
@@ -46,20 +45,38 @@ body {
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  width: 200px;
+  width: 220px;
 }
 
 .btn:hover {
-  background-color: #005ea2;
   transform: scale(1.05);
 }
 
+/* Pegawai */
+.login-pegawai {
+  background-color: #0078d7;
+}
+.login-pegawai:hover {
+  background-color: #005ea2;
+}
+
+/* Admin */
 .login-admin {
   background-color: #28a745;
 }
-
 .login-admin:hover {
   background-color: #1e7e34;
+}
+
+/* Superadmin (elegan hitam) */
+.login-superadmin {
+  background-color: #000000;
+  border: 1px solid #222;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.login-superadmin:hover {
+  background-color: #333;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
 }
 
 .portal-footer {
