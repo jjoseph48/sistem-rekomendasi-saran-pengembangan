@@ -78,9 +78,7 @@ class Feedback(Base):
     __tablename__ = "feedback"
 
     id = Column(Integer, primary_key=True, index=True)
-    nip = Column(String, index=True)
     feedback = Column(String)
-    tanggal_feedback = Column(DateTime, default=datetime.utcnow)
-
+    
     # 🔹 Relasi balik ke SaranPengembangan
     saran = relationship("SaranPengembangan", back_populates="feedback", uselist=False)

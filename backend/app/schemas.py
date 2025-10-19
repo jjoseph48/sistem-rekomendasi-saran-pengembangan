@@ -61,7 +61,6 @@ class SaranResponse(BaseModel):
 
 class FeedbackCreate(BaseModel):
     saran_id: int
-    nip: str                # 🔹 untuk tahu siapa yang memberi feedback
     feedback: str           # (sangat efektif, efektif, kurang efektif, tidak efektif)
 
 class EditSaran(BaseModel):

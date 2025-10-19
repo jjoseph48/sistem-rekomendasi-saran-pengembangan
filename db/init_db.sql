@@ -1,5 +1,5 @@
 -- =====================================
---  INIT DB SCRIPT: LATSAR SYSTEM
+--  INIT DB SCRIPT: LATSAR SYSTEM (FINAL UPDATED)
 -- =====================================
 
 -- 🧱 Tabel pegawai
@@ -22,6 +22,12 @@ CREATE TABLE IF NOT EXISTS kompetensi_pegawai (
     gap_kompetensi FLOAT NOT NULL
 );
 
+-- 🧱 Tabel feedback (baru)
+CREATE TABLE IF NOT EXISTS feedback (
+    id SERIAL PRIMARY KEY,
+    feedback VARCHAR(255) NOT NULL
+);
+
 -- 🧱 Tabel saran_pengembangan
 CREATE TABLE IF NOT EXISTS saran_pengembangan (
     id SERIAL PRIMARY KEY,
@@ -29,7 +35,7 @@ CREATE TABLE IF NOT EXISTS saran_pengembangan (
     kompetensi VARCHAR(255) NOT NULL,
     aspek_kompetensi VARCHAR(100) NOT NULL,
     saran_pengembangan TEXT NOT NULL,
-    feedback_terakhir VARCHAR(50) DEFAULT 'Tidak Ada',
+    feedback_id INTEGER REFERENCES feedback(id) ON DELETE SET NULL,
     tanggal_rekomendasi TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -45,10 +51,16 @@ CREATE TABLE IF NOT EXISTS user_admin (
 CREATE INDEX IF NOT EXISTS idx_pegawai_nip ON pegawai(nip);
 CREATE INDEX IF NOT EXISTS idx_saran_pegawai_id ON saran_pengembangan(pegawai_id);
 CREATE INDEX IF NOT EXISTS idx_kompetensi_pegawai_id ON kompetensi_pegawai(pegawai_id);
+CREATE INDEX IF NOT EXISTS idx_feedback_text ON feedback(feedback);
 
 -- 🧩 Insert superadmin default
 INSERT INTO user_admin (username, password, role)
 VALUES ('superadmin', 'super123', 'superadmin')
+ON CONFLICT (username) DO NOTHING;
+
+-- 🧩 Insert admin tambahan
+INSERT INTO user_admin (username, password, role)
+VALUES ('admin1', 'admin123', 'admin')
 ON CONFLICT (username) DO NOTHING;
 
 -- =====================================
