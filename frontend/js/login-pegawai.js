@@ -9,6 +9,8 @@ document.getElementById("btnLogin").addEventListener("click", async () => {
   try {
     const response = await fetch(`api/login?nip=${nip}`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nip }),
   });
 
 
