@@ -4,7 +4,7 @@ import joblib
 from fastapi import APIRouter
 
 router = APIRouter()
-clf_model = joblib.load("./model/model_classification_best_tuned.joblib")
+clf_model = joblib.load("./model/model_classification_best_tuned_linux.joblib")
 
 aspek_list = ["Pengetahuan", "Keahlian", "Personal Attribute"]
 
