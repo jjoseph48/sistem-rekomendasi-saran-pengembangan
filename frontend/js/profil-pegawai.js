@@ -11,10 +11,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const profilUrl = `http://localhost:8000/pegawai/profile/${nip}`;
-  const kompetensiUrl = `http://localhost:8000/kompetensi/${nip}`;
-  const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
-  const feedbackUrl = `http://localhost:8000/feedback`; // <== endpoint feedback
+  const profilUrl = `api/pegawai/profile/${nip}`;
+  const kompetensiUrl = `api/kompetensi/${nip}`;
+  const saranUrl = `api/pegawai/saran/${nip}`;
+  const feedbackUrl = `api/feedback`; // <== endpoint feedback
   
   let semuaSaran = [];
   let semuaKompetensi = [];
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     try {
-      const baseUrl = "http://localhost:8000";
+      const baseUrl = "api";
       const res = await fetch(`${baseUrl}/kompetensi/${kompetensiEdit.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -239,7 +239,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!saranDipilih) return alert("Belum memilih saran!");
 
     const saranId = saranDipilih.id || saranDipilih.saran_id;
-    const url = `http://localhost:8000/pegawai/saran/select/${saranId}`;
+    const url = `api/pegawai/saran/select/${saranId}`;
 
     try {
       const res = await fetch(url, { method: "PUT" });

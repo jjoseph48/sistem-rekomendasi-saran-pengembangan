@@ -7,7 +7,7 @@ document.getElementById("btnLogin").addEventListener("click", async () => {
   }
 
   try {
-    const response = await fetch(`http://localhost:8000/login?nip=${nip}`, {
+    const response = await fetch(`api/login?nip=${nip}`, {
         method: "POST",
   });
 

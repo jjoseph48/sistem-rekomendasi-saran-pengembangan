@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // === Ambil data saran pengembangan dari API ===
   try {
-    const response = await fetch(`http://localhost:8000/pegawai/saran/${nip}`, {
+    const response = await fetch(`api/pegawai/saran/${nip}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },
     });

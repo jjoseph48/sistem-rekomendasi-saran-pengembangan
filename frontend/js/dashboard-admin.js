@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const saranEdit = document.getElementById("saranEdit");
 
   // API base
-  const API_BASE = "http://localhost:8000";
+  const API_BASE = "/api";
 
   // Data containers
   let pegawaiData = [];
