@@ -11,8 +11,8 @@ function goToLogin(role) {
 }
 
 // Reload otomatis hanya saat mode development (localhost)
-if (location.hostname === "127.0.0.1" || location.hostname === "localhost" ||
-  location.hostname === "141.11.25.76") {
-  console.log("Development mode: auto-refresh enabled");
-  setTimeout(() => location.reload(), 5000);
-}
+// if (location.hostname === "127.0.0.1" || location.hostname === "localhost" ||
+//   location.hostname === "141.11.25.76") {
+//   console.log("Development mode: auto-refresh enabled");
+//   setTimeout(() => location.reload(), 5000);
+// }
