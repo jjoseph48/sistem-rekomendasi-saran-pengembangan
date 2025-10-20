@@ -92,6 +92,22 @@
       <tr><td>Kinerja</td><td id="kinerja">-</td></tr>
     </table>
 
+    <h2>Data Kompetensi</h2>
+    <table id="tabelKompetensi" class="kompetensi-table">
+      <thead>
+        <tr>
+          <th>Kompetensi</th>
+          <th>Standar Level</th>
+          <th>Capaian Nilai</th>
+          <th>Gap</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" class="loading">Memuat data...</td></tr>
+      </tbody>
+    </table>
+
     <h2>Saran Pengembangan</h2>
     <p>
       Pilih satu saran di tiap satu kompetensi untuk ditindaklanjuti oleh Biro Sumber Daya Manusia dan Organisasi.
@@ -113,6 +129,25 @@
       </tbody>
     </table>
   </main>
+
+  <!-- Modal Edit Kompetensi -->
+  <div id="modalEditKompetensi" class="modal">
+    <div class="modal-content">
+      <h3>Edit Kompetensi</h3>
+      <form id="formEditKompetensi">
+        <label>Standar Level</label>
+        <input type="number" id="editStandar" min="1" max="5" required>
+        <label>Capaian Nilai</label>
+        <input type="number" id="editCapaian" min="1" max="5" required>
+        <label>Gap</label>
+        <input type="number" id="editGap" step="0.1" required>
+        <div class="modal-buttons">
+          <button type="submit">Simpan</button>
+          <button type="button" class="cancel" id="btnBatalEdit">Batal</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Modal Konfirmasi -->
   <div id="modalSaran">

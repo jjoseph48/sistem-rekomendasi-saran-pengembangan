@@ -12,10 +12,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const profilUrl = `http://localhost:8000/pegawai/profile/${nip}`;
+  const kompetensiUrl = `http://localhost:8000/kompetensi/${nip}`;
   const saranUrl = `http://localhost:8000/pegawai/saran/${nip}`;
   const feedbackUrl = `http://localhost:8000/feedback`; // <== endpoint feedback
-
+  
   let semuaSaran = [];
+  let semuaKompetensi = [];
   let semuaFeedback = {};
   let saranDipilih = null;
 
@@ -49,6 +51,43 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("kinerja").textContent = profil.kinerja || "-";
   } catch (err) {
     console.error("❌ Gagal memuat profil:", err);
+  }
+
+  // === Ambil Data Kompetensi ===
+  try {
+    const res = await fetch(kompetensiUrl);
+    const data = await res.json();
+    semuaKompetensi = data.kompetensi || [];
+
+    const tbody = document.querySelector("#tabelKompetensi tbody");
+    tbody.innerHTML = "";
+
+    if (semuaKompetensi.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='5'>Belum ada data kompetensi.</td></tr>";
+      return;
+    }
+
+    semuaKompetensi.forEach(k => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${k.kompetensi}</td>
+        <td>${k.standar_level}</td>
+        <td>${k.capaian_nilai}</td>
+        <td>${k.gap}</td>
+        <td><button class="btn-edit" data-id="${k.id}">Edit</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    document.querySelectorAll(".btn-edit").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = e.target.dataset.id;
+        bukaModalEdit(id);
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    alert("Gagal memuat data kompetensi.");
   }
 
   // === Ambil Saran Pengembangan ===
@@ -125,7 +164,58 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.error("❌ Gagal memuat data saran:", err);
   }
 
-  // === Modal ===
+   // === Modal Edit Kompetensi ===
+  const modalEdit = document.getElementById("modalEditKompetensi");
+  const formEdit = document.getElementById("formEditKompetensi");
+  const btnBatal = document.getElementById("btnBatalEdit");
+
+  function bukaModalEdit(id) {
+    kompetensiEdit = semuaKompetensi.find(k => k.id == id);
+    if (!kompetensiEdit) return;
+
+    document.getElementById("editStandar").value = kompetensiEdit.standar_level;
+    document.getElementById("editCapaian").value = kompetensiEdit.capaian_nilai;
+    document.getElementById("editGap").value = kompetensiEdit.gap;
+    modalEdit.style.display = "flex";
+  }
+
+  btnBatal.addEventListener("click", () => {
+    modalEdit.style.display = "none";
+    kompetensiEdit = null;
+  });
+
+  // === Submit Edit ===
+  formEdit.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!kompetensiEdit) return;
+
+    const data = {
+      standar_level: parseFloat(document.getElementById("editStandar").value),
+      capaian_nilai: parseFloat(document.getElementById("editCapaian").value),
+      gap: parseFloat(document.getElementById("editGap").value)
+    };
+
+    try {
+      const baseUrl = "http://localhost:8000";
+      const res = await fetch(`${baseUrl}/kompetensi/${kompetensiEdit.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      if (!res.ok) throw new Error("Gagal update kompetensi");
+      const result = await res.json();
+
+      alert(`✅ ${result.message}`);
+      modalEdit.style.display = "none";
+      location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("❌ Gagal memperbarui data kompetensi.");
+    }
+  });
+
+  // === Modal Saran ===
   function bukaModal(saranId) {
     saranDipilih = semuaSaran.find(
       (s) => s.id === saranId || s.saran_id === saranId
@@ -168,9 +258,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   // === Tutup Modal ===
   document.getElementById("btnTutup").addEventListener("click", tutupModal);
 
-  // === Logout ===
-  document.getElementById("btnLogout").addEventListener("click", () => {
-    sessionStorage.clear();
-    window.location.href = "login-pegawai.html";
-  });
+  // // === Logout ===
+  // document.getElementById("btnLogout").addEventListener("click", () => {
+  //   sessionStorage.clear();
+  //   window.location.href = "login-pegawai.html";
+  // });
 });

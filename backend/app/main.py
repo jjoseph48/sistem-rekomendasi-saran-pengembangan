@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app import models
 from app.database import Base, engine, SessionLocal
-from app.routers import auth, pegawai, predict, feedback, admin, superadmin
+from app.routers import auth, pegawai, predict, feedback, admin, superadmin, kompetensi
 import os
 
 # =====================================================
@@ -52,6 +52,7 @@ app.include_router(predict.router)
 app.include_router(feedback.router)
 app.include_router(admin.router)
 app.include_router(superadmin.router)
+app.include_router(kompetensi.router)
 
 # =====================================================
 # 🏠 Root Endpoint
