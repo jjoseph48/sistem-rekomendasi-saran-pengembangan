@@ -1,22 +1,26 @@
 // ================================
-// 📄 profil-pegawai.js
+// 📄 profil-pegawai.js (fixed)
 // ================================
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const nip = new URLSearchParams(window.location.search).get("nip") ||
-  sessionStorage.getItem("nip");
+  const nip =
+    new URLSearchParams(window.location.search).get("nip") ||
+    sessionStorage.getItem("nip");
+
   console.log("NIP Pegawai:", nip);
+
   if (!nip) {
     alert("Silakan login terlebih dahulu.");
     window.location.href = "login-pegawai.html";
     return;
   }
 
-  const baseUrl = "/api"; // sesuaikan jika beda host
+  const baseUrl = "/api";
+
   const tabelKompetensi = document.querySelector("#tabelKompetensi tbody");
   const tabelSaran = document.querySelector("#tabelSaran tbody");
 
-  // Elemen profil dari tabel HTML
+  // Elemen profil
   const elNama = document.getElementById("nama");
   const elNip = document.getElementById("nip");
   const elSatker = document.getElementById("satker");
@@ -47,7 +51,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (!res.ok) throw new Error("Gagal mengambil profil pegawai");
       const data = await res.json();
 
-      // isi tabel profil
       elNama.textContent = data.nama || "-";
       elNip.textContent = data.nip || "-";
       elSatker.textContent = data.satker || "-";
@@ -65,12 +68,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function loadKompetensi() {
     try {
       const res = await fetch(`${baseUrl}/kompetensi/${nip}`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },});
-
-      // const res = await fetch(`${baseUrl}/kompetensi/${nip}`);
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
       if (!res.ok) throw new Error("Gagal mengambil data kompetensi");
-      kompetensiData = await res.json();
+
+      const data = await res.json();
+      kompetensiData = data.kompetensi || [];
 
       if (!kompetensiData.length) {
         tabelKompetensi.innerHTML = `<tr><td colspan="5">Tidak ada data kompetensi.</td></tr>`;
@@ -90,7 +94,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         tabelKompetensi.appendChild(tr);
       });
 
-      // Tombol edit
       document.querySelectorAll(".btnEdit").forEach((btn) => {
         btn.addEventListener("click", (e) => {
           const id = parseInt(e.target.dataset.id);
@@ -115,14 +118,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     modalEdit.style.display = "flex";
   }
 
-  btnBatalEdit.addEventListener("click", () => {
+  btnBatalEdit?.addEventListener("click", () => {
     modalEdit.style.display = "none";
   });
 
-  formEdit.addEventListener("submit", async (e) => {
+  formEdit?.addEventListener("submit", async (e) => {
     e.preventDefault();
     const updatedData = {
-      id: selectedKompetensi.id, // kirim kompetensi_id
+      id: selectedKompetensi.id,
       nip,
       standar_level: parseFloat(document.getElementById("editStandar").value),
       capaian_nilai: parseFloat(document.getElementById("editCapaian").value),
@@ -150,29 +153,30 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 🔹 4. Ambil Data Saran Pengembangan
   // ================================
   async function loadSaran() {
-      try {
-        const response = await fetch(`api/pegawai/saran/${nip}`, {
+    try {
+      const res = await fetch(`${baseUrl}/pegawai/saran/${nip}`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
       if (!res.ok) throw new Error("Gagal mengambil saran pengembangan");
       const data = await res.json();
 
-      if (!data.length) {
+      const saranList = data.riwayat_saran || [];
+      if (!saranList.length) {
         tabelSaran.innerHTML = `<tr><td colspan="5">Belum ada saran pengembangan.</td></tr>`;
         return;
       }
 
       tabelSaran.innerHTML = "";
-      data.forEach((s) => {
+      saranList.forEach((s) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td>${s.kompetensi}</td>
           <td>${s.aspek_kompetensi || "-"}</td>
           <td>${s.saran_pengembangan}</td>
-          <td>${s.feedback_terakhir || "-"}</td>
+          <td>${s.feedback || "-"}</td>
           <td>
-            <button class="btnPilih" data-id="${s.id}" ${s.is_selected ? "disabled" : ""}>
+            <button class="btnPilih" data-id="${s.saran_id}" ${s.is_selected ? "disabled" : ""}>
               ${s.is_selected ? "✅ Dipilih" : "Pilih"}
             </button>
           </td>
@@ -183,7 +187,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.querySelectorAll(".btnPilih").forEach((btn) => {
         btn.addEventListener("click", (e) => {
           const id = parseInt(e.target.dataset.id);
-          const saran = data.find((d) => d.id === id);
+          const saran = saranList.find((d) => d.saran_id === id);
           if (saran) openModalSaran(saran);
         });
       });
@@ -202,17 +206,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     modalSaran.style.display = "flex";
   }
 
-  btnTutup.addEventListener("click", () => {
+  btnTutup?.addEventListener("click", () => {
     modalSaran.style.display = "none";
   });
 
-  btnSimpan.addEventListener("click", async () => {
+  btnSimpan?.addEventListener("click", async () => {
     if (!selectedSaran) return;
 
     try {
-      const res = await fetch(`${baseUrl}/pegawai/saran/select/${selectedSaran.id}`, {
-        method: "PUT",
-      });
+      const res = await fetch(
+        `${baseUrl}/pegawai/saran/select/${selectedSaran.saran_id}`,
+        { method: "PUT" }
+      );
       if (!res.ok) throw new Error("Gagal memilih saran pengembangan");
 
       const result = await res.json();
