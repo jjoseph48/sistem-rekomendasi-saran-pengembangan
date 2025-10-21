@@ -64,7 +64,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ================================
   async function loadKompetensi() {
     try {
-      const res = await fetch(`${baseUrl}/kompetensi/${nip}`);
+      const response = await fetch(`${baseUrl}/kompetensi/${nip}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },});
+
+      // const res = await fetch(`${baseUrl}/kompetensi/${nip}`);
       if (!res.ok) throw new Error("Gagal mengambil data kompetensi");
       kompetensiData = await res.json();
 
@@ -146,8 +150,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 🔹 4. Ambil Data Saran Pengembangan
   // ================================
   async function loadSaran() {
-    try {
-      const res = await fetch(`${baseUrl}/pegawai/saran/${nip}`);
+      try {
+        const response = await fetch(`api/pegawai/saran/${nip}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
       if (!res.ok) throw new Error("Gagal mengambil saran pengembangan");
       const data = await res.json();
 
