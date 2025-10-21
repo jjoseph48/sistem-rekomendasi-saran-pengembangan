@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     try {
-      const res = await fetch(`${baseUrl}/kompetensi/update/${updatedData.id}`, {
+      const res = await fetch(`${baseUrl}/kompetensi/${updatedData.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedData),
@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ================================
   async function loadSaran() {
     try {
-      const res = await fetch(`${baseUrl}/saran?nip=${nip}`);
+      const res = await fetch(`${baseUrl}/saran/${nip}`);
       if (!res.ok) throw new Error("Gagal mengambil saran pengembangan");
       const data = await res.json();
 
