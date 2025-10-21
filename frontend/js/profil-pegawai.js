@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ================================
   async function loadProfil() {
     try {
-      const res = await fetch(`${baseUrl}/pegawai/${nip}`);
+      const res = await fetch(`${baseUrl}/pegawai/profile/${nip}`);
       if (!res.ok) throw new Error("Gagal mengambil profil pegawai");
       const data = await res.json();
 
