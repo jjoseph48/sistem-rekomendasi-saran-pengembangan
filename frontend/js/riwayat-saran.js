@@ -4,7 +4,7 @@ const nip =
 
 const apiBase = "/api";
 const saranUrl = `${apiBase}/pegawai/saran/${nip}`;
-const feedbackKategoriUrl = `/feedback/`; // GET semua kategori feedback
+const feedbackKategoriUrl = `${apiBase}/feedback/`; // GET semua kategori feedback
 const kirimFeedbackBaseUrl = `${apiBase}/pegawai/saran/feedback`; // PUT /{saran_id}?feedback_id=x
 
 let daftarSaran = [];
