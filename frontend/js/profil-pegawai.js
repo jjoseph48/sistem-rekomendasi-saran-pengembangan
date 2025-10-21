@@ -1,113 +1,67 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const nip =
-    new URLSearchParams(window.location.search).get("nip") ||
-    sessionStorage.getItem("nip");
-
-  console.log("NIP Pegawai:", nip);
-
+  const nip = localStorage.getItem("nip");
   if (!nip) {
-    alert("Sesi login telah berakhir. Silakan login kembali.");
+    alert("Silakan login terlebih dahulu.");
     window.location.href = "login-pegawai.html";
     return;
   }
 
-  const profilUrl = `api/pegawai/profile/${nip}`;
-  const kompetensiUrl = `api/kompetensi/${nip}`;
-  const saranUrl = `api/pegawai/saran/${nip}`;
-  const feedbackUrl = `api/feedback`; // <== endpoint feedback
-  
+  const profilDiv = document.getElementById("profilPegawai");
+  const tabelBody = document.querySelector("#tabelSaran tbody");
+
   let semuaSaran = [];
-  let semuaKompetensi = [];
   let semuaFeedback = {};
   let saranDipilih = null;
 
-  // === Ambil Feedback (untuk translate feedback_id) ===
+  // === 1. Ambil Data Profil Pegawai ===
   try {
-    const resFeedback = await fetch(feedbackUrl);
-    if (!resFeedback.ok) throw new Error("Gagal mengambil data feedback");
-
-    const dataFeedback = await resFeedback.json();
-
-    // asumsikan dataFeedback = [{ id: 1, feedback: "Perlu pendampingan mentor" }, ...]
-    dataFeedback.forEach((fb) => {
-      semuaFeedback[fb.id] = fb.feedback;
-    });
-
-    console.log("✅ Data feedback berhasil dimuat:", semuaFeedback);
-  } catch (err) {
-    console.error("❌ Gagal memuat feedback:", err);
-  }
-
-  // === Ambil Profil ===
-  try {
-    const resProfil = await fetch(profilUrl);
-    if (!resProfil.ok) throw new Error("Gagal mengambil profil pegawai");
-    const profil = await resProfil.json();
-
-    document.getElementById("nip").textContent = profil.nip || "-";
-    document.getElementById("nama").textContent = profil.nama || "-";
-    document.getElementById("jabatan").textContent = profil.jabatan || "-";
-    document.getElementById("satker").textContent = profil.satker || "-";
-    document.getElementById("kinerja").textContent = profil.kinerja || "-";
-  } catch (err) {
-    console.error("❌ Gagal memuat profil:", err);
-  }
-
-  // === Ambil Data Kompetensi ===
-  try {
-    const res = await fetch(kompetensiUrl);
+    const res = await fetch(`/api/pegawai/${nip}`);
     const data = await res.json();
-    semuaKompetensi = data.kompetensi || [];
 
-    const tbody = document.querySelector("#tabelKompetensi tbody");
-    tbody.innerHTML = "";
+    if (!data || !data.nama) throw new Error("Data pegawai tidak ditemukan");
 
-    if (semuaKompetensi.length === 0) {
-      tbody.innerHTML = "<tr><td colspan='5'>Belum ada data kompetensi.</td></tr>";
-      return;
-    }
-
-    semuaKompetensi.forEach(k => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${k.kompetensi}</td>
-        <td>${k.standar_level}</td>
-        <td>${k.capaian_nilai}</td>
-        <td>${k.gap}</td>
-        <td><button class="btn-edit" data-id="${k.id}">Edit</button></td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    document.querySelectorAll(".btn-edit").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const id = e.target.dataset.id;
-        bukaModalEdit(id);
-      });
-    });
+    profilDiv.innerHTML = `
+      <p><strong>Nama:</strong> ${data.nama}</p>
+      <p><strong>NIP:</strong> ${data.nip}</p>
+      <p><strong>Jabatan:</strong> ${data.jabatan}</p>
+      <p><strong>Unit Kerja:</strong> ${data.unit_kerja}</p>
+    `;
   } catch (err) {
-    console.error(err);
-    alert("Gagal memuat data kompetensi.");
+    console.error("Gagal memuat profil:", err);
+    profilDiv.innerHTML = `<p style="color:red;">Gagal memuat profil pegawai.</p>`;
   }
 
-  // === Ambil Saran Pengembangan ===
+  // === 2. Ambil Data Feedback ===
   try {
-    const resSaran = await fetch(saranUrl);
-    if (!resSaran.ok) throw new Error("Gagal mengambil data saran");
+    const res = await fetch(`/api/feedback`);
+    const feedbackList = await res.json();
+    semuaFeedback = Object.fromEntries(
+      feedbackList.map((f) => [f.id, f.kategori])
+    );
+  } catch (err) {
+    console.error("Gagal memuat feedback:", err);
+  }
 
-    const dataSaran = await resSaran.json();
-    semuaSaran = dataSaran.riwayat_saran || [];
+  // === 3. Ambil Saran Pengembangan Pegawai ===
+  try {
+    const res = await fetch(`/api/pegawai/saran/${nip}`);
+    semuaSaran = await res.json();
+    renderTabelSaran();
+  } catch (err) {
+    console.error("Gagal memuat saran:", err);
+    tabelBody.innerHTML = `<tr><td colspan='5'>Gagal memuat data saran.</td></tr>`;
+  }
 
-    const tbody = document.querySelector("#tabelSaran tbody");
-    tbody.innerHTML = "";
+  // === Fungsi render tabel saran ulang ===
+  function renderTabelSaran() {
+    tabelBody.innerHTML = "";
 
     if (semuaSaran.length === 0) {
-      tbody.innerHTML =
+      tabelBody.innerHTML =
         "<tr><td colspan='5'>Belum ada saran pengembangan.</td></tr>";
       return;
     }
 
-    // Urutkan berdasarkan kompetensi
     const urutanKompetensi = [
       "Integritas",
       "Kerjasama",
@@ -126,11 +80,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       return indexA - indexB;
     });
 
-    // Render tabel
     semuaSaran.forEach((item) => {
       const saranId = item.saran_id || item.id;
-
-      // translate feedback_id ke teks feedback
       const feedbackText =
         semuaFeedback[item.feedback_id] ||
         item.feedback ||
@@ -150,96 +101,48 @@ document.addEventListener("DOMContentLoaded", async () => {
           </button>
         </td>
       `;
-      tbody.appendChild(tr);
+      tabelBody.appendChild(tr);
     });
 
-    // Event listener tombol pilih
+    // Tambahkan event tombol pilih
     document.querySelectorAll(".btn-pilih").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const saranId = parseInt(e.target.dataset.id);
-        bukaModal(saranId);
+        const saran = semuaSaran.find(
+          (s) => s.id === saranId || s.saran_id === saranId
+        );
+        bukaModal(saran);
       });
     });
-  } catch (err) {
-    console.error("❌ Gagal memuat data saran:", err);
   }
 
-   // === Modal Edit Kompetensi ===
-  const modalEdit = document.getElementById("modalEditKompetensi");
-  const formEdit = document.getElementById("formEditKompetensi");
-  const btnBatal = document.getElementById("btnBatalEdit");
+  // === 4. Modal ===
+  const modal = document.getElementById("modalKonfirmasi");
+  const btnSimpan = document.getElementById("btnSimpan");
+  const btnBatal = document.getElementById("btnBatal");
 
-  function bukaModalEdit(id) {
-    kompetensiEdit = semuaKompetensi.find(k => k.id == id);
-    if (!kompetensiEdit) return;
-
-    document.getElementById("editStandar").value = kompetensiEdit.standar_level;
-    document.getElementById("editCapaian").value = kompetensiEdit.capaian_nilai;
-    document.getElementById("editGap").value = kompetensiEdit.gap;
-    modalEdit.style.display = "flex";
-  }
-
-  btnBatal.addEventListener("click", () => {
-    modalEdit.style.display = "none";
-    kompetensiEdit = null;
-  });
-
-  // === Submit Edit ===
-  formEdit.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!kompetensiEdit) return;
-
-    const data = {
-      standar_level: parseFloat(document.getElementById("editStandar").value),
-      capaian_nilai: parseFloat(document.getElementById("editCapaian").value),
-      gap: parseFloat(document.getElementById("editGap").value)
-    };
-
-    try {
-      const baseUrl = "api";
-      const res = await fetch(`${baseUrl}/kompetensi/${kompetensiEdit.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      if (!res.ok) throw new Error("Gagal update kompetensi");
-      const result = await res.json();
-
-      alert(`✅ ${result.message}`);
-      modalEdit.style.display = "none";
-      location.reload();
-    } catch (err) {
-      console.error(err);
-      alert("❌ Gagal memperbarui data kompetensi.");
-    }
-  });
-
-  // === Modal Saran ===
-  function bukaModal(saranId) {
-    saranDipilih = semuaSaran.find(
-      (s) => s.id === saranId || s.saran_id === saranId
-    );
-    if (!saranDipilih) {
-      alert("Saran tidak ditemukan!");
-      return;
-    }
-
-    document.getElementById("modalText").textContent = `"${saranDipilih.saran_pengembangan}" (${saranDipilih.aspek_kompetensi})`;
-    document.getElementById("modalSaran").style.display = "flex";
+  function bukaModal(saran) {
+    saranDipilih = saran;
+    document.getElementById("isiModal").innerHTML = `
+      <p>Apakah Anda yakin ingin memilih saran ini untuk kompetensi <strong>${saran.kompetensi}</strong>?</p>
+      <p><em>${saran.saran_pengembangan}</em></p>
+    `;
+    modal.style.display = "block";
   }
 
   function tutupModal() {
-    document.getElementById("modalSaran").style.display = "none";
+    modal.style.display = "none";
     saranDipilih = null;
   }
 
-  // === Simpan Pilihan ===
-  document.getElementById("btnSimpan").addEventListener("click", async () => {
+  btnBatal.addEventListener("click", tutupModal);
+
+  // === 5. Simpan Pilihan (tanpa reload) ===
+  btnSimpan.addEventListener("click", async () => {
     if (!saranDipilih) return alert("Belum memilih saran!");
 
     const saranId = saranDipilih.id || saranDipilih.saran_id;
-    const url = `api/pegawai/saran/select/${saranId}`;
+    const url = `/api/pegawai/saran/select/${saranId}`;
 
     try {
       const res = await fetch(url, { method: "PUT" });
@@ -247,20 +150,28 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const hasil = await res.json();
       alert(`✅ ${hasil.message}`);
+
+      // 🔹 Update array lokal
+      semuaSaran.forEach((s) => {
+        if (
+          s.pegawai_id === saranDipilih.pegawai_id &&
+          s.kompetensi === saranDipilih.kompetensi
+        ) {
+          s.is_selected = s.id === saranId || s.saran_id === saranId;
+        }
+      });
+
       tutupModal();
-      location.reload();
+      renderTabelSaran();
     } catch (err) {
       console.error("❌ Gagal menyimpan saran:", err);
       alert("Terjadi kesalahan saat menyimpan saran.");
     }
   });
 
-  // === Tutup Modal ===
-  document.getElementById("btnTutup").addEventListener("click", tutupModal);
-
-  // // === Logout ===
+  // // === 6. Tombol Logout ===
   // document.getElementById("btnLogout").addEventListener("click", () => {
-  //   sessionStorage.clear();
+  //   localStorage.removeItem("nip");
   //   window.location.href = "login-pegawai.html";
   // });
 });
