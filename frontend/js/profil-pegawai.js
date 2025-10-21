@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const nip = localStorage.getItem("nip");
+  const nip = sessionStorage.getItem("nip");
   if (!nip) {
     alert("Silakan login terlebih dahulu.");
     window.location.href = "login-pegawai.html";
