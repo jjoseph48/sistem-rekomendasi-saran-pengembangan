@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ================================
   async function loadKompetensi() {
     try {
-      const response = await fetch(`${baseUrl}/kompetensi/${nip}`, {
+      const res = await fetch(`${baseUrl}/kompetensi/${nip}`, {
       method: "GET",
       headers: { "Content-Type": "application/json" },});
 

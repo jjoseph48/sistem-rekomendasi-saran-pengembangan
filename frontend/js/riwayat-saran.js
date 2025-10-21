@@ -20,7 +20,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 // === Ambil daftar kategori feedback dari API ===
 async function ambilKategoriFeedback() {
   try {
-    const res = await fetch(feedbackKategoriUrl);
+    const res = await fetch(feedbackKategoriUrl, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },});
+    // const res = await fetch(feedbackKategoriUrl);
     if (!res.ok) throw new Error("Gagal mengambil kategori feedback");
 
     const data = await res.json();
