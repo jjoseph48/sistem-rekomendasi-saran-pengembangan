@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   // ================================
   async function loadSaran() {
     try {
-      const res = await fetch(`${baseUrl}/saran/${nip}`);
+      const res = await fetch(`${baseUrl}/pegawai/saran/${nip}`);
       if (!res.ok) throw new Error("Gagal mengambil saran pengembangan");
       const data = await res.json();
 
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!selectedSaran) return;
 
     try {
-      const res = await fetch(`${baseUrl}/saran/select/${selectedSaran.id}`, {
+      const res = await fetch(`${baseUrl}/pegawai/saran/select/${selectedSaran.id}`, {
         method: "PUT",
       });
       if (!res.ok) throw new Error("Gagal memilih saran pengembangan");
