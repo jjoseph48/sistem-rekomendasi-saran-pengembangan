@@ -55,18 +55,42 @@ document.addEventListener("DOMContentLoaded", () => {
   function generateKompetensiForm() {
     const container = document.getElementById("kompetensiContainer");
     container.innerHTML = "";
+
     daftarKompetensi.forEach((nama) => {
       const div = document.createElement("div");
       div.classList.add("kompetensi-card");
+
       div.innerHTML = `
-        <h3>${nama}</h3>
-        <label>Standar level</label>
-        <input type="number" class="input-standar" min="1" max="5" value="3" />
-        <label>Capaian nilai</label>
-        <input type="number" class="input-capaian" min="0" max="6" value="3" />
-        <label>Gap</label>
-        <input type="number" class="input-gap" step="0.25" value="0" />
-      `;
+      <h3>${nama}</h3>
+      <label>Standar level</label>
+      <input type="number" class="input-standar" min="1" max="5" value="3" />
+
+      <label>Capaian nilai</label>
+      <input type="number" class="input-capaian" min="0" max="6" value="3" />
+
+      <label>Gap</label>
+      <input type="number" class="input-gap" step="0.25" value="0" readonly />
+    `;
+
+      // === Hitung otomatis ===
+      const inputStandar = div.querySelector(".input-standar");
+      const inputCapaian = div.querySelector(".input-capaian");
+      const inputGap = div.querySelector(".input-gap");
+
+      function hitungGap() {
+        const standar = parseFloat(inputStandar.value) || 0;
+        const capaian = parseFloat(inputCapaian.value) || 0;
+        const gap = (capaian - standar).toFixed(2); // ubah ke (standar - capaian) jika mau arah sebaliknya
+        inputGap.value = gap;
+      }
+
+      // Jalankan saat nilai berubah
+      inputStandar.addEventListener("input", hitungGap);
+      inputCapaian.addEventListener("input", hitungGap);
+
+      // Hitung nilai awal
+      hitungGap();
+
       container.appendChild(div);
     });
   }

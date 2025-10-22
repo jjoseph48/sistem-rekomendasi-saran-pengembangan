@@ -104,3 +104,9 @@ h1 {
   border-radius: 6px;
   border: 1px solid #ddd;
 }
+
+.input-gap[readonly] {
+  background-color: #f0f0f0;
+  color: #333;
+  cursor: not-allowed;
+}
