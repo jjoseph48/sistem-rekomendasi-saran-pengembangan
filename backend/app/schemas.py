@@ -2,6 +2,10 @@ from pydantic import BaseModel
 from datetime import datetime
 from typing import List, Optional
 
+# File schemas.py digunakan untuk : 
+# - Validasi input (data dari frontend ke backend)
+# - Serialisasi output (data dari backend ke frontend)
+# FastAPI menggunakan Pydantic untuk memastikan data sesuai tipe dan format yang diinginkan
 
 # =====================================================
 # 👤 Data Pegawai

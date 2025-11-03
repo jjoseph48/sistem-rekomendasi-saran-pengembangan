@@ -3,6 +3,12 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from .database import Base
 
+# File models.py berfungsi untuk mendefinisikan tabel dan relasi di database.
+# Semua class di sini adalah ORM models (Object Relational Mapping), artinya : 
+# - Setiap class mewakili tabel di database
+# - Setiap atribut (Column) mewakili kolom di tabel tersebut
+# - Relasi antar tabel diatur lewat relationship() dan ForeignKey()
+
 # =======================
 # Model UserAdmin
 # =======================
