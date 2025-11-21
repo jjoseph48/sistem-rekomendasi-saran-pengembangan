@@ -1,5 +1,5 @@
 // =================== Base URL Backend =====================
-const API_BASE = "/api";
+const API_BASE = "http://localhost:8000";
 
 // =================== Inisialisasi =====================
 document.addEventListener("DOMContentLoaded", async () => {

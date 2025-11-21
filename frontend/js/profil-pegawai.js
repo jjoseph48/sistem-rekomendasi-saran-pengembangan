@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const baseUrl = "/api";
+  const baseUrl = "http://localhost:8000";
 
   const tabelKompetensi = document.querySelector("#tabelKompetensi tbody");
   const tabelSaran = document.querySelector("#tabelSaran tbody");

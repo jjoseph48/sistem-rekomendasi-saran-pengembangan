@@ -2,7 +2,7 @@ const nip =
   new URLSearchParams(window.location.search).get("nip") ||
   sessionStorage.getItem("nip");
 
-const apiBase = "/api";
+const apiBase = "http://localhost:8000";
 const saranUrl = `${apiBase}/pegawai/saran/${nip}`;
 const feedbackKategoriUrl = `${apiBase}/feedback/`; // GET semua kategori feedback
 const kirimFeedbackBaseUrl = `${apiBase}/pegawai/saran/feedback`; // PUT /{saran_id}?feedback_id=x
